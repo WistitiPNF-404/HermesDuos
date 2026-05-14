@@ -18,10 +18,68 @@ modutil.mod.Path.Wrap("SetupMap", function(base, ...)
 	return base(...)
 end)
 
-game.OnControlPressed({'Gift', function()
-	return trigger_Gift()
-end})
+local HelpTextFile = rom.path.combine(rom.paths.Content, "Game/Text/en/HelpText.en.sjson")
+local Order = { "Id", "InheritFrom", "DisplayName", "Description" }
 
+local newKeywords = {
+	"ModsWistitiSlowFieldPlural",
+}
+game.ConcatTableValuesIPairs(game.KeywordList, newKeywords)
+
+mod.GustPlural = sjson.to_object({
+	Id = "ModsWistitiSlowFieldPlural",
+	InheritFrom = "SlowField",
+	DisplayName = "Gusts",
+	Description = "{#ItalicBoldFormat}{$Keywords.Status}: {#Prev}Afflicted foes are {#BoldFormat}{$TooltipData.ExtractData.ChillAmount}% {#Prev}slower, and their ranged shots {$TooltipData.ExtractData.ProjectileSlow:F} slower. Lasts {#BoldFormatGraft}{$TooltipData.ExtractData.Duration} Sec.",
+}, Order)
+
+sjson.hook(HelpTextFile, function(data)
+	table.insert(data.Texts, mod.GustPlural)
+end)
+
+ResetKeywords()
+
+--Projectiles
+local playerProjectilesFile = rom.path.combine(rom.paths.Content,"Game\\Projectiles\\PlayerProjectiles.sjson")
+sjson.hook(playerProjectilesFile, function(data)
+	local projectileFile = rom.path.combine(rom.paths.plugins(), _PLUGIN.guid .. "\\projectiles\\Projectiles.sjson")
+	mod.readSjson(projectileFile, data, "Projectiles")
+end)
+
+--Damage coloring
+game.OverwriteTableKeys( game.ProjectileData, {
+	DemeterOmegaStorm =
+	{
+		InheritFrom = { "DemeterColorProjectile" },
+	},
+})
+game.ProcessDataStore(game.ProjectileData)
+
+game.ConcatTableValues(game.WeaponSets.OlympianProjectileNames,{
+	"DemeterOmegaStorm",
+})
+
+game.OverwriteTableKeys( game.ScreenData.RunClear.DamageSourceMap, {
+	DemeterOmegaStorm = "Hurricane Eye",
+})
+
+function mod.readSjson(file,data,key)
+    local fileHandle = io.open(file,"r")
+    if fileHandle ~= nil then
+        local sjsonContent = fileHandle:read("*a")
+        local sjsonTable = sjson.decode(sjsonContent)
+        for _, value in pairs(sjsonTable[key]) do
+            table.insert(data[key], value)
+        end
+    end
+end
+
+-- Weapons
+--[[local playerWeaponsFile = rom.path.combine(rom.paths.Content, "Game\\Weapons\\PlayerWeapons.sjson")
+sjson.hook(playerWeaponsFile, function(data)
+	local weaponFile = rom.path.combine(rom.paths.plugins(), _PLUGIN.guid .. "\\weapons\\PlayerWeapons.sjson")
+	mod.readSjson(projectileFile, data, "PlayerWeapons")
+end)]]
 
 -- Everything below this line is part of the example mod creation guide,
 -- which you can find on our wiki, replacing Schelemeus portrait:
@@ -53,31 +111,3 @@ end})
 ------- Method 2: Adding the package load function to the Schelemeus setup events
 -- local loadSkellyPackageCall = { FunctionName = _PLUGIN.guid .. ".LoadSkellyPackage" }
 -- table.insert(game.EnemyData.NPC_Skelly_01.SetupEvents, loadSkellyPackageCall)
-
-
-------- Method 3: Adding the package to the list of packages loaded whenever Schelemeus is spawned
-local customPortraitsPackageName = _PLUGIN.guid .. "Portraits"
-table.insert(game.EnemyData.NPC_Skelly_01.LoadPackages, customPortraitsPackageName)
-
-
------------------------------------------------------------
------------ Step 2: Modifying the portrait path -----------
------------------------------------------------------------
-
--- All packages built by `deppth2 hpk` will have the package name as part of all file paths, to prevent mods from clashing
--- If you added any nested folders in your package, include them here as well
-local newPortraitFilePath = _PLUGIN.guid .. "Portraits\\Portraits_Skelly_01"
-
--- rom.path.combine is provided by Hell2Modding to build file paths correctly across different operating systems
--- rom.paths.Content() will return the path to the Content folder of the current Hades II installation
-local guiPortraitsVFXFile = rom.path.combine(rom.paths.Content(), "Game\\Animations\\GUI_Portraits_VFX.sjson")
-
-sjson.hook(guiPortraitsVFXFile, function(data)
-  for _, entry in ipairs(data.Animations) do
-    if entry.Name == "Portrait_Skelly_Default_01" or entry.Name == "Portrait_Skelly_Default_01_Exit" then
-      entry.FilePath = newPortraitFilePath
-			entry.CreateAnimations = {}
-			entry.OffsetY = 0
-    end
-  end
-end)

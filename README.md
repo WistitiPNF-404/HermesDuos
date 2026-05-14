@@ -1,4 +1,4 @@
-# ¸Hermes Duos
+# Hermes Duos
 
 Hermes finally played the messenger and went ahead to cook new boons with the cooperation of his extended family; Duo boons are now available in his arsenal!
 

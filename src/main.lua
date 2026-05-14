@@ -47,6 +47,10 @@ local function on_ready()
 	mod = modutil.mod.Mod.Register(_PLUGIN.guid)
 
 	import 'ready.lua'
+
+	import 'gods/poseidon.lua'
+	import 'gods/demeter.lua'
+	import 'gods/hermes.lua'
 end
 
 local function on_reload()
@@ -55,6 +59,8 @@ local function on_reload()
 	if config.enabled == false then return end
 
 	import 'reload.lua'
+
+	import 'gods/godsReload.lua'
 end
 
 local function on_ready_late()

@@ -1,0 +1,69 @@
+{ Projectiles = [ 
+    {
+        Name = "DemeterOmegaStorm"
+        InheritFrom = "1_BaseProjectile"
+        Type = "ARC"
+        AffectsEnemies = true
+        AffectsFriends = false
+        AffectsSelf = false
+        UnlimitedUnitPenetration = true
+        MultipleUnitCollisions = false
+        MultipleObstacleCollisions = false
+        NumPenetrations = 99999
+        Range = 540
+        ArcStart = 0
+		ArcEnd = 10800
+		ArcScaleY = 0.5
+        Speed = 130
+        UseStartLocation = true
+        DamageRadius = 310
+        DamageRadiusScaleY = 0.7
+        DamageRadiusScaleX = 1.3
+        Damage = 20
+        ImpactVelocity = 0
+        BlastSpeed = 2000
+        ExpandBlastDuringDetonation = true
+        AnimIgnoreBlastRadius = true
+        MultiDetonate = true
+        TotalFuse = 3.0
+        Fuse = 0.25
+        ImpactFx = "DemeterWhirlwindHitsparkRandomDelay"
+        SpeedMultiplierOfEnemyProjectilesInside = 0.40
+        UseVulnerability = false
+        IgnoreCoverageAngles = true
+        SilentImpactOnInvulnerable = true
+        ManuallySetTarget = true
+        AttachToMarker = "null"
+        Thing =
+        {
+            Graphic = "DemeterSprintStormFxIn"
+            AttachedAnim = "TorchOrbitShadowBase"
+            OffsetZ = 112
+            RotateGeometry = true
+            UseBoundsForSortDrawArea = true
+            SortBoundsScale = 0.5
+            SortMode = "FromParent"
+            Tallness = 20
+            Points =
+            [
+                {
+                    X = 90
+                    Y = 0
+                }
+                {
+                    X = 0
+                    Y = -45
+                }
+                {
+                    X = -90
+                    Y = 0
+                }
+                {
+                    X = 0
+                    Y = 45
+                }
+            ]
+        }
+    }
+]
+}

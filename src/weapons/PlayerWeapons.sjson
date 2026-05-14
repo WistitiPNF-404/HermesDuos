@@ -1,0 +1,47 @@
+{ Weapons = [ 
+    {
+		Name = "WeaponTeleportCast"
+		InheritFrom = "1_BaseMagicWeapon"
+		Control = "Attack1"
+		Type = "GUN"
+		ChargeSoundFadeTime = 0.25
+		RootOwnerWhileFiring = true
+		BlockMoveInput = true
+		CancelMovement = true
+		ChargeCancelMovement = true
+		FullyAutomatic = false
+		BarrelLength = 32
+		AutoLock = false
+		AutoLockRange = 1000
+		WeaponRange = 600
+		AutoLockArcDistance = 75
+		ShowFreeAimLine = true
+		TargetReticleAnimation = "CastProjectileReticle"
+		ManualAiming = true
+		ManualAimingInitialOffset = 420
+		FireFx = "StaffProjectileFireFxRing"
+		ChargeStartAnimation = "Melinoe_Cast_Start"
+		FireGraphic = "Melinoe_Cast_Fire_Quick"
+		LockTriggerForCharge = false
+		ChargeCancelGraphic = "Melinoe_Cast_Fire_Quick"
+		AcceptTriggerLockRequests = false
+		AllowExternalForceRelease = true
+		FireOnRelease = true
+		MinChargeToFire = 0
+		ChargeRangeMultiplier = 1.0
+		ChargeSpeedMultiplier = 1.0
+		ChargeFinishFx = "null"
+		Cooldown = 0.2
+		ChargeTimeFrames = 13
+		SwapOnFire = "null"
+		ProjectileSpacing = 0
+		CanCancelDisables = true
+		SetCompleteAngleOnFire = true
+		SetCompleteAngleOnCharge = true
+		ActiveProjectileCap = 1
+		IncludeWeaponInProjectileCap = "WeaponCast"
+		PriorityFireRequest = true
+		IgnoreUnitChargeMultiplier = true
+	}
+]
+}
