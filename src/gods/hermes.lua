@@ -406,6 +406,27 @@ gods.CreateBoon({
 				ReportedFireballSizeMultiplier = "FireballSizeMultiplier"
 			},
 		},
+		PropertyChanges =
+		{
+			{
+				WeaponName = "WeaponCastProjectile",
+				ProjectileProperty = "Scale",
+				ChangeValue = 2,
+				ChangeType = "Absolute",
+			},
+			{
+				WeaponName = "WeaponCastProjectile",
+				WeaponProperty = "ProjectileScaleMultiplier",
+				ChangeValue = 2,
+				ChangeType = "Absolute",
+			},
+			{
+				WeaponName = "WeaponCastProjectile",
+				WeaponProperty = "BlastRadiusMultiplier",
+				ChangeValue = 1.25,
+				ChangeType = "Absolute",
+			},
+		},
 		OnWeaponFiredFunctions =
 		{
 			ValidWeapons =  {"WeaponSprint"},

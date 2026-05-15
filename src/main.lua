@@ -51,6 +51,8 @@ local function on_ready()
 	import 'gods/poseidon.lua'
 	import 'gods/demeter.lua'
 	import 'gods/hermes.lua'
+
+	game.SetupRunData()
 end
 
 local function on_reload()

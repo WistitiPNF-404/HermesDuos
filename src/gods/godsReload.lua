@@ -98,7 +98,6 @@ end
 function mod.FireballSprintLaunch ( weaponData, traitArgs, triggerArgs )
 	local traitData = GetHeroTrait(gods.GetInternalBoonName("FireballSprintBoon"))
 	local functionArgs = traitData.OnWeaponFiredFunctions.FunctionArgs 
-	local heroAngle = GetAngle({ Id = CurrentRun.Hero.ObjectId })
 
 	local sprintFireballProjectile = 
 	{
@@ -106,6 +105,10 @@ function mod.FireballSprintLaunch ( weaponData, traitArgs, triggerArgs )
 		DamageMultiplier = functionArgs.DamageMultiplier,
 		Id = CurrentRun.Hero.ObjectId,
 		ScaleMultiplier = 1,
+		DataProperties = 
+		{
+			DamageRadius = 320,
+		}
 	}
 
 	CreateProjectileFromUnit(sprintFireballProjectile)
@@ -115,14 +118,10 @@ modutil.mod.Path.Wrap("CreateProjectileFromUnit", function (baseFunc, args)
 	if args.Name == "ProjectileFireball" then -- Controlled Burn's fireball
 		local fireballSizeMultiplier = GetTotalHeroTraitValue("ReportedFireballSizeMultiplier", { IsMultiplier = true })
 		args.ScaleMultiplier = (args.ScaleMultiplier or 1) * fireballSizeMultiplier
-	end
-	return baseFunc(args)
-end)
-
-modutil.mod.Path.Wrap("OnWeaponFiredFunctions", function (baseFunc, args)
-	if args.Name == "ProjectileCastFireball" then -- Glowing Coal's fireball
-		local fireballSizeMultiplier = GetTotalHeroTraitValue("ReportedFireballSizeMultiplier", { IsMultiplier = true })
-		args.ScaleMultiplier = (args.ScaleMultiplier or 1) * fireballSizeMultiplier
+		if args.DataProperties == nil then
+			args.DataProperties = { DamageRadius = 320 }
+		end
+		args.DataProperties.DamageRadius = (args.DataProperties.DamageRadius or 320) * fireballSizeMultiplier
 	end
 	return baseFunc(args)
 end)
