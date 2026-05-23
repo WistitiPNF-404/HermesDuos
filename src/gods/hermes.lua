@@ -1,3 +1,92 @@
+-- Hermes x Hera
+gods.CreateBoon({
+	pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "OopsAllCursedBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 14 },
+	reuseBaseIcons = true,
+
+    displayName = "Royal Propagation",
+    description = "Inflicting {$Keywords.Link} on foes applies every {$Keywords.Status} you can inflict using other abilities.",
+	StatLines = { "CursePotencyDisplay1" },
+    customStatLine = {
+        Id = "CursePotencyDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Olympian Curse Potency:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "HeraWeaponBoon", "HeraSpecialBoon", "HeraCastBoon", "HeraSprintBoon" },
+			{ "HermesWeaponBoon", "HermesSpecialBoon", "TimedKillBuffBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_44",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+		{
+			Key = "ReportedCurseMultiplier",
+			ExtractAs = "TooltipData",
+			Format = "Percent",
+		},
+	},
+
+	ExtraFields = 
+	{
+		CurseModifiers = {
+			CursePotencyMultiplier = { BaseValue = 1.5 },
+			ReportValues = { 
+				ReportedCurseMultiplier = "CursePotencyMultiplier",
+			},
+		},
+		SetupFunction = 
+		{
+			Name = "BuildValidEffects",
+			Args = 
+			{
+				StatusTraitNames = 
+				{
+					DamageEchoEffect = LinkedTraitData.ZeusEchoTraits,
+					BurnEffect = LinkedTraitData.HestiaBurnTraits,
+					ChillEffect = LinkedTraitData.DemeterRootTraits,
+					LegacyChillEffect = { "DemeterSprintBoon", "CastNovaBoon", "StormSpawnBoon" },
+					AmplifyKnockbackEffect = { "PoseidonStatusBoon", "PoseidonCastBoon" },
+					WeakEffect = LinkedTraitData.AphroditeWeakTraits,
+					DamageShareEffect = LinkedTraitData.HeraLinkTraits,
+					BlindEffect = LinkedTraitData.ApolloBlindTraits,
+					DelayedKnockbackEffect = { "MassiveKnockupBoon" },
+				},
+			},
+		},
+		OnEffectApplyFunction = 
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "HitchCopyStatus",
+			FunctionArgs = 
+			{
+				ValidStatusNames = 
+				{
+					DamageEchoEffect = true,
+					BurnEffect = "ApplyBurn",
+					ChillEffect = "ApplyRoot",
+					LegacyChillEffect = true,
+					AmplifyKnockbackEffect = true,
+					WeakEffect = "ApplyAphroditeVulnerability",
+					DamageShareEffect = "ApplyDamageShare",
+					BlindEffect = true,
+					DelayedKnockbackEffect = true,
+				},
+			},
+		},
+    },
+})
+
 -- Hermes x Poseidon
 gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
@@ -7,7 +96,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 14 },
+    addToExistingGod = { boonPosition = 15 },
 	reuseBaseIcons = true,
 
     displayName = "Gilded Hook",
@@ -61,7 +150,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 15 },
+    addToExistingGod = { boonPosition = 16 },
 	reuseBaseIcons = true,
 
     displayName = "Hurricane Eye",
@@ -359,7 +448,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 16 },
+    addToExistingGod = { boonPosition = 17 },
 	reuseBaseIcons = true,
 
     displayName = "Aerobic Capacity",
@@ -375,7 +464,7 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
-			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
+			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
 		},
 	},
     boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_48",
@@ -433,7 +522,7 @@ gods.CreateBoon({
 			FunctionName = _PLUGIN.guid .. "." .. "FireballSprintSetup",
 			FunctionArgs =
 			{
-				ProjectileName = "ProjectileFireball",
+				ProjectileName = "ProjectileSprintFireball",
 				DamageMultiplier = 2.5,
 				ReportValues = 
 				{
@@ -447,3 +536,99 @@ gods.CreateBoon({
 		},
     },
 })
+
+-- Hermes x Ares
+--[[gods.CreateBoon({
+	pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "TrainKillBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 18 },
+	reuseBaseIcons = true,
+
+    displayName = "Train Wreck",
+    description = "Whenever you {$Keywords.Sprint} through foes, deal {#BoldFormatGraft}30 {#Prev} damage. You might also kill them outright...",
+	StatLines = { "ATrainStatDisplay1" },
+    customStatLine = {
+        Id = "ATrainStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Instant Destruction Chance:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "AresWeaponBoon", "AresSepcialBoon", "AresManaBoon", "BloodDropRevengeBoon" },
+			{ "SorcerySpeedBoon", "SlowProjectileBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_45",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+		{
+			Key = "ReportedChance",
+			ExtractAs = "Chance",
+			Format = "LuckModifiedPercent",
+			HideSigns = true,
+		},
+	},
+
+	ExtraFields = 
+	{
+		OnSprintAction = 
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "TrainSprintOutcome",
+			RunOnce = true,
+			Args = 
+			{
+				Radius = 120,
+				Range = 120,
+				StartDelay = 0.2,
+				Cooldown = 0.2,
+				Vfx = "AresMelBuff",
+				NumJumps = 1,
+				ProjectileName = "HeraSprintProjectile",
+				DamageMultiplier = { BaseValue = 1 },
+				ReportValues = 
+				{
+					ReportedJumps = "NumJumps",
+					ReportedMultiplier = "DamageMultiplier",
+				}
+			}
+		},
+		OnEnemyDamagedAction =
+		{
+			ValidProjectiles = { "HeraSprintProjectile" },
+			FunctionName = _PLUGIN.guid .. "." .. "CheckTrainKillDamage",
+			Args = 
+			{
+				Chance = 0.1,
+				Damage = 9999,
+				Vfx = "ZeusLightningIris",
+				ReportValues = { ReportedChance = "Chance" },
+			},
+		},
+		OnSprintStartAction = 
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "StartTrainSprintPhasing",
+			Args = 
+			{
+				EffectName = "SprintStasisEffect",
+				--Interrupt = true,
+				--InterruptProjectile = "ProjectileSprintStrike",
+				Range = 120,
+				ScaleY = 0.6,
+				Cooldown = 0.5,
+			}
+		},
+		OnSprintEndAction = 
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "EndTrainSprintPhasing",
+		},
+    },
+})]]

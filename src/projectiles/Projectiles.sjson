@@ -65,5 +65,10 @@
             ]
         }
     }
+    {
+		Name = "ProjectileSprintFireball"
+		InheritFrom = "ProjectileFireball"
+		Damage = 100
+	}
 ]
 }

@@ -23,7 +23,7 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
-			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
+			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
 		},
 	},
     boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_48",
@@ -81,7 +81,7 @@ gods.CreateBoon({
 			FunctionName = _PLUGIN.guid .. "." .. "FireballSprintSetup",
 			FunctionArgs =
 			{
-				ProjectileName = "ProjectileFireball",
+				ProjectileName = "ProjectileSprintFireball",
 				DamageMultiplier = 2.5,
 				ReportValues = 
 				{

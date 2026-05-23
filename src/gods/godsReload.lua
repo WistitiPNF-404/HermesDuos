@@ -1,3 +1,76 @@
+-- Hermes x Hera
+modutil.mod.Path.Wrap("BuildValidEffects", function(baseFunc, hero, args )
+	baseFunc( hero, args)
+	local CurseMultiplier = GetTotalHeroTraitValue("ReportedCurseMultiplier", { IsMultiplier = true })
+	for effectName, data in pairs(SessionMapState.ValidEffects) do
+		if effectName == "BurnEffect" then
+			data.NumStacks = data.NumStacks * CurseMultiplier
+		end
+		--[[if effectName == "DamageShareEffect" then
+			data.Amount = (EffectData.DamageShareEffect.EffectData.Amount + GetTotalHeroTraitValue("DamageShareAmountIncrease")) * CurseMultiplier
+		end]]
+		if effectName == "DamageEchoEffect" then
+			data.Modifier = data.Modifier * CurseMultiplier
+		end
+					
+		if effectName == "DelayedKnockbackEffect" then
+			data.TriggerDamage = data.TriggerDamage * CurseMultiplier
+		end
+		if effectName == "DamageOverTime" then
+			data.Amount = data.Amount * CurseMultiplier
+		end
+	end
+end)
+
+function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
+	if triggerArgs.EffectName == "DamageShareEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then 
+		local activeCurses = DeepCopyTable( SessionMapState.ValidEffects )
+		for i, enemy in pairs( ShallowCopyTable( ActiveEnemies ) ) do
+			if enemy ~= victim and not enemy.SkipModifiers and enemy.ActiveEffects then
+				for effectName, effectStacks in pairs(enemy.ActiveEffects) do
+					if functionArgs.ValidStatusNames[effectName] and activeCurses[effectName] then
+						-- unfortunately (fortunately?) we only store stacks on the unit, we'll have to dig to get other salient data :T @alice
+						if effectName == "BurnEffect" then
+							if not activeCurses[effectName].NumStacks or activeCurses[effectName].NumStacks < effectStacks then
+								activeCurses[effectName].NumStacks = effectStacks
+							end
+						end
+						--[[if effectName == "DamageShareEffect" then
+							if not activeCurses[effectName].Amount or activeCurses[effectName].Amount < enemy.DamageShareAmount then
+								activeCurses[effectName].Amount = enemy.DamageShareAmount
+							end
+						end]]
+						if effectName == "DamageEchoEffect" then
+							if enemy.ActiveEchoes and enemy.ActiveEchoes[effectName] and enemy.ActiveEchoes[effectName].Payoff and 
+								( not activeCurses[effectName].Modifier or activeCurses[effectName].Modifier < enemy.ActiveEchoes[effectName].Payoff ) then
+								activeCurses[effectName].Modifier = enemy.ActiveEchoes[effectName].Payoff
+							end
+						end
+						
+						if effectName == "DelayedKnockbackEffect" then
+							activeCurses[effectName].TriggerDamage = enemy.TriggerDamage 
+						end
+					end
+				end
+			end
+		end
+
+		for effectName, effectData in pairs( activeCurses ) do
+			if type(functionArgs.ValidStatusNames[effectName]) == "string" then
+				thread( _G[functionArgs.ValidStatusNames[effectName]], victim, { EffectName = effectName, EffectArgs = { Modifier = effectData.Modifier, Amount = effectData.Amount }, NumStacks = effectData.NumStacks }, {})
+			else
+				local dataProperties = {}
+				if EffectData[effectName].EffectData then
+					dataProperties = MergeTables( EffectData[effectName].EffectData, effectData )
+				elseif EffectData[effectName].DataProperties then
+					dataProperties = MergeTables( EffectData[effectName].DataProperties, effectData )
+				end
+				ApplyEffect( { DestinationId = victim.ObjectId, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = dataProperties })				
+			end
+		end
+	end
+end
+
 -- Hermes x Poseidon
 modutil.mod.Path.Wrap("CalculateDamageMultipliers", function(baseFunc, attacker, victim, weaponData, triggerArgs )
 	baseFunc( attacker, victim, weaponData, triggerArgs )
@@ -110,7 +183,7 @@ function mod.FireballSprintLaunch ( weaponData, traitArgs, triggerArgs )
 			DamageRadius = 320,
 		}
 	}
-
+	
 	CreateProjectileFromUnit(sprintFireballProjectile)
 end
 
@@ -123,5 +196,96 @@ modutil.mod.Path.Wrap("CreateProjectileFromUnit", function (baseFunc, args)
 		end
 		args.DataProperties.DamageRadius = (args.DataProperties.DamageRadius or 320) * fireballSizeMultiplier
 	end
+	if args.Name == "ProjectileSprintFireball" then -- Aerobic Capacity's fireball
+		local fireballSizeMultiplier = GetTotalHeroTraitValue("ReportedFireballSizeMultiplier", { IsMultiplier = true })
+		args.ScaleMultiplier = (args.ScaleMultiplier or 1) * fireballSizeMultiplier
+		if args.DataProperties == nil then
+			args.DataProperties = { DamageRadius = 320 }
+		end
+		args.DataProperties.DamageRadius = (args.DataProperties.DamageRadius or 320) * fireballSizeMultiplier
+	end
 	return baseFunc(args)
 end)
+
+-- Hermes x Ares
+function mod.StartTrainSprintPhasing ( args, triggerArgs )
+	SetPlayerPhasing("SprintMetaupgrade")
+	thread( mod.CheckTrainSprintPhasingCollision, args )
+end
+
+function mod.CheckTrainSprintPhasingCollision( args )
+	if HasThread( mod.StartTrainSprintPhasing ) then
+		return
+	end
+	args = args or {}
+	args.Cooldown = args.Cooldown or 0.5
+	args.Range = args.Range or 150
+	-- optimize by making version of OnUnitCollision that triggers even on phased units
+	while SessionMapState.SprintActive do
+		local ids = GetClosestIds({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreHomingIneligible = true, Distance = args.Range, ScaleY = args.ScaleY})
+		for _, id in pairs( ids ) do
+			local enemy = ActiveEnemies[id]
+			if enemy and enemy.ActivationFinished and CheckCooldown( id .. "SprintFreeze", args.Cooldown ) and enemy and not enemy.IsBoss and not enemy.IgnoreSprintPhasingStasisStun then
+				if args.Interrupt then
+					thread( TemporaryMuteStunImmunity, enemy, "OnSprintHitStun")
+					CreateProjectileFromUnit({ Name = args.InterruptProjectile, Id = CurrentRun.Hero.ObjectId, DestinationId = id, FireFromTarget = true })
+				end
+			end
+		end
+		wait(0.1, "SprintPhasingCheck")
+	end
+end
+
+function mod.EndTrainSprintPhasing ( args, triggerArgs )
+	if args and args.CheckSprint and ConfigOptionCache.SprintAutoHold then
+		return
+	end
+	if not ConfigOptionCache.SprintAutoHold and (( triggerArgs and triggerArgs.Canceled ) or ( args and args.CheckSprint and SessionMapState.SprintActive )) then
+		return
+	end
+	SetPlayerUnphasing("SprintMetaupgrade")
+	killTaggedThreads( mod.StartTrainSprintPhasing )
+end
+
+function mod.TrainSprintOutcome( functionArgs )
+	if not SessionMapState.SprintActive or not SessionMapState.SprintStartTime or ( functionArgs.StartDelay and (_worldTimeUnmodified - SessionMapState.SprintStartTime) < functionArgs.StartDelay ) then
+		return
+	end
+	if CheckCooldown( "HeraSprintSuction", functionArgs.Cooldown) then
+		local enemyId = GetClosest({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, StopsProjectiles = true, Distance = functionArgs.Radius})
+		CreateAnimation({ Name = functionArgs.Vfx, DestinationId = CurrentRun.Hero.ObjectId })
+		if enemyId and ActiveEnemies[enemyId] and not ActiveEnemies[enemyId].IsDead then
+			local enemy = ActiveEnemies[enemyId]
+			if enemy.DamageSurrogate ~= nil then
+				enemy = enemy.DamageSurrogate
+			end
+			local firstApplication = (enemy.ActiveEffects and not enemy.ActiveEffects[functionArgs.EffectName])
+			ApplyDamageShare( enemy, functionArgs )
+			if firstApplication and functionArgs.ProjectileName then
+				thread( DelayFireSprintLinkProjectile, enemyId, functionArgs )
+			end
+		end
+	end
+end
+
+function mod.CheckTrainKillDamage( enemy, traitArgs, triggerArgs )
+	modutil.mod.Hades.PrintOverhead("Hera Projectile hits")
+	if not enemy or not enemy.ObjectId or SessionMapState.SpawnKillRecord[enemy.ObjectId] or enemy == CurrentRun.Hero or (triggerArgs and traitArgs.ExcludeProjectileName and triggerArgs.SourceProjectile == traitArgs.ExcludeProjectileName ) then
+		return
+	end
+	if enemy.IsBoss or enemy.UseBossHealthBar or not RandomChance(traitArgs.Chance * GetTotalHeroTraitValue( "LuckMultiplier", { IsMultiplier = true })) then
+		SessionMapState.SpawnKillRecord[enemy.ObjectId] = true
+		return
+	end
+	SessionMapState.SpawnKillRecord[enemy.ObjectId] = true
+	local damageAmount = traitArgs.Damage
+	thread( mod.DoTrainSpawnDamage, enemy, traitArgs, damageAmount )
+end
+
+function mod.DoTrainSpawnDamage( enemy, traitArgs, damageAmount )
+	modutil.mod.Hades.PrintOverhead("Rip bozo")
+	wait(0.1, RoomThreadName )
+	CreateAnimation({ Name = traitArgs.Vfx, DestinationId = enemy.ObjectId, Group = "FX_Standing_Top" })
+	thread( SpawnKillPresentation, enemy )
+	thread( Damage, enemy, { AttackerId = CurrentRun.Hero.ObjectId, AttackerTable = CurrentRun.Hero, SourceProjectile = "ZeusOnSpawn", DamageAmount = damageAmount, Silent = false, PureDamage = true, IgnoreHealthBuffer = true } )
+end

@@ -46,21 +46,29 @@ sjson.hook(playerProjectilesFile, function(data)
 	mod.readSjson(projectileFile, data, "Projectiles")
 end)
 
+table.insert(game.TraitData["FireballRendBoon"].AddOutgoingDamageModifiers.ValidProjectiles, "ProjectileSprintFireball")
+
 --Damage coloring
 game.OverwriteTableKeys( game.ProjectileData, {
 	DemeterOmegaStorm =
 	{
 		InheritFrom = { "DemeterColorProjectile" },
 	},
+	ProjectileSprintFireball =
+	{
+		InheritFrom = { "HestiaColorProjectile" },
+	}
 })
 game.ProcessDataStore(game.ProjectileData)
 
 game.ConcatTableValues(game.WeaponSets.OlympianProjectileNames,{
 	"DemeterOmegaStorm",
+	"ProjectileSprintFireball",
 })
 
 game.OverwriteTableKeys( game.ScreenData.RunClear.DamageSourceMap, {
 	DemeterOmegaStorm = "Hurricane Eye",
+	ProjectileSprintFireball = "Aerobic Capacity",
 })
 
 function mod.readSjson(file,data,key)
