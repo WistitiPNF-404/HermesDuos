@@ -23,6 +23,7 @@ local Order = { "Id", "InheritFrom", "DisplayName", "Description" }
 
 local newKeywords = {
 	"ModsWistitiSlowFieldPlural",
+	"ModsWistitiExecute",
 }
 game.ConcatTableValuesIPairs(game.KeywordList, newKeywords)
 
@@ -33,8 +34,21 @@ mod.GustPlural = sjson.to_object({
 	Description = "{#ItalicBoldFormat}{$Keywords.Status}: {#Prev}Afflicted foes are {#BoldFormat}{$TooltipData.ExtractData.ChillAmount}% {#Prev}slower, and their ranged shots {$TooltipData.ExtractData.ProjectileSlow:F} slower. Lasts {#BoldFormatGraft}{$TooltipData.ExtractData.Duration} Sec.",
 }, Order)
 
+mod.ExecuteStatus = sjson.to_object({
+	Id = "ModsWistitiExecute",
+	DisplayName = "Execute",
+	Description = "Susceptible foes have a {#BoldFormat}{$TooltipData.ExtractData.ExecuteBaseChance}% {#Prev} chance to be destroyed outright, dropping {#BoldFormat}3 {#Prev}{!Icons.BloodDropWithCountIcon} when slained. Outcome increases with your current {!Icons.BloodDropWithCountIcon} count.",
+}, Order)
+
+mod.AresTrainBoon_CombatText = sjson.to_object({
+	Id = "AresTrain_CombatText",
+	DisplayName = "{#CombatTextHighlightFormat}{$TraitData."..(gods.GetInternalBoonName("TrainKillBoon"))..".Name}{#Prev}!",
+}, Order)
+
 sjson.hook(HelpTextFile, function(data)
 	table.insert(data.Texts, mod.GustPlural)
+	table.insert(data.Texts, mod.ExecuteStatus)
+	table.insert(data.Texts, mod.AresTrainBoon_CombatText)
 end)
 
 ResetKeywords()
@@ -46,6 +60,10 @@ sjson.hook(playerProjectilesFile, function(data)
 	mod.readSjson(projectileFile, data, "Projectiles")
 end)
 
+--Adding valid projectiles to existing boons
+--Demeter x Hermes
+table.insert(game.TraitData["StormSpawnBoon"].SetupFunction.Args.TargetProjectileNames, "DemeterOmegaStorm")
+--Hestia x Hermes
 table.insert(game.TraitData["FireballRendBoon"].AddOutgoingDamageModifiers.ValidProjectiles, "ProjectileSprintFireball")
 
 --Damage coloring
@@ -57,18 +75,24 @@ game.OverwriteTableKeys( game.ProjectileData, {
 	ProjectileSprintFireball =
 	{
 		InheritFrom = { "HestiaColorProjectile" },
-	}
+	},
+	AresTrainProjectile =
+	{
+		InheritFrom = { "AresColorProjectile" },
+	},
 })
 game.ProcessDataStore(game.ProjectileData)
 
 game.ConcatTableValues(game.WeaponSets.OlympianProjectileNames,{
 	"DemeterOmegaStorm",
 	"ProjectileSprintFireball",
+	"AresTrainProjectile",
 })
 
 game.OverwriteTableKeys( game.ScreenData.RunClear.DamageSourceMap, {
 	DemeterOmegaStorm = "Hurricane Eye",
 	ProjectileSprintFireball = "Aerobic Capacity",
+	AresTrainProjectile = "Train Wreck",
 })
 
 function mod.readSjson(file,data,key)

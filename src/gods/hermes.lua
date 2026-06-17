@@ -15,7 +15,7 @@ gods.CreateBoon({
 	StatLines = { "CursePotencyDisplay1" },
     customStatLine = {
         Id = "CursePotencyDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Olympian Curse Potency:",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Bonus {$Keywords.Link} Damage:",
         description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
     },
 	requirements =
@@ -32,20 +32,32 @@ gods.CreateBoon({
 	ExtractValues =
 	{
 		{
-			Key = "ReportedCurseMultiplier",
-			ExtractAs = "TooltipData",
+			Key = "DamageShareAmountIncrease",
+			ExtractAs = "TooltipAmount",
+			Format = "Percent",
+		},
+		{
+			ExtractAs = "DamageShareDuration",
+			SkipAutoExtract = true,
+			External = true,
+			BaseType = "EffectData",
+			BaseName = "DamageShareEffect",
+			BaseProperty = "Duration",
+		},
+		{
+			ExtractAs = "DamageShareAmount",
+			SkipAutoExtract = true,
+			External = true,
+			BaseType = "EffectData",
+			BaseName = "DamageShareEffect",
+			BaseProperty = "Amount",
 			Format = "Percent",
 		},
 	},
 
 	ExtraFields = 
 	{
-		CurseModifiers = {
-			CursePotencyMultiplier = { BaseValue = 1.5 },
-			ReportValues = { 
-				ReportedCurseMultiplier = "CursePotencyMultiplier",
-			},
-		},
+		DamageShareAmountIncrease = { BaseValue = 0.2 },
 		SetupFunction = 
 		{
 			Name = "BuildValidEffects",
@@ -154,7 +166,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Hurricane Eye",
-    description = "Your {$Keywords.Omega} create {#BoldFormatGraft}2 {#Prev}{$Keywords.ModsWistitiSlowFieldPlural} that orbit around you, but uses {#ManaFormat}+{$TooltipData.ExtractData.ManaCostAddition}{#Prev}{!Icons.Mana}.",
+    description = "Your {$Keywords.Omega} create {$Keywords.ModsWistitiSlowFieldPlural} that orbit around you, but use {#ManaFormat}+{$TooltipData.ExtractData.ManaCostAddition}{#Prev}{!Icons.Mana}.",
 	StatLines = { "GustOrbitStatDisplay1" },
     customStatLine = {
         Id = "GustOrbitStatDisplay1",
@@ -256,7 +268,7 @@ gods.CreateBoon({
 			{
 				ProjectileName = "DemeterOmegaStorm",
                 NumProjectiles = 2,
-				GustDamage = 20, --description only
+				GustDamage = 10, --description only
 				ReportValues = { 
 					ReportedGustDamage = "GustDamage",
 				},
@@ -538,7 +550,7 @@ gods.CreateBoon({
 })
 
 -- Hermes x Ares
---[[gods.CreateBoon({
+gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
     characterName = "Hermes",
 	internalBoonName = "TrainKillBoon",
@@ -550,18 +562,26 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Train Wreck",
-    description = "Whenever you {$Keywords.Sprint} through foes, deal {#BoldFormatGraft}30 {#Prev} damage. You might also kill them outright...",
+    description = "Whenever you {$Keywords.Sprint} through foes, deal {#BoldFormatGraft}30 {#Prev}damage, and possibly {$Keywords.ModsWistitiExecute} most foes.",
 	StatLines = { "ATrainStatDisplay1" },
+	TrayStatLines = { "ATrainStatDisplay2" },
     customStatLine = {
-        Id = "ATrainStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Instant Destruction Chance:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        {
+			Id = "ATrainStatDisplay1",
+			displayName = "{!Icons.Bullet}{#PropertyFormat}Instant Destruction Chance per Plasma:",
+			description = "{#UpgradeFormat}+{$TooltipData.StatDisplay1}",
+		},
+		{
+			Id = "ATrainStatDisplay2",
+			displayName = "{!Icons.Bullet}{#PropertyFormat}Current Instant Destruction Chance:",
+			description = "{#UpgradeFormat}{$TooltipData.ExtractData.PlasmaChanceAddition:P}",
+		},
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
-			{ "AresWeaponBoon", "AresSepcialBoon", "AresManaBoon", "BloodDropRevengeBoon" },
+			{ "AresWeaponBoon", "AresSpecialBoon", "AresManaBoon", "BloodDropRevengeBoon" },
 			{ "SorcerySpeedBoon", "SlowProjectileBoon" },
 		},
 	},
@@ -571,46 +591,74 @@ gods.CreateBoon({
 	ExtractValues =
 	{
 		{
-			Key = "ReportedChance",
+			Key = "ReportedPlasmaChanceMultiplier",
 			ExtractAs = "Chance",
 			Format = "LuckModifiedPercent",
+			DecimalPlaces = 2,
+			HideSigns = true,
+		},
+		{
+			Key = "ReportedBaseChance",
+			ExtractAs = "ExecuteBaseChance",
+			SkipAutoExtract = true,
+			DecimalPlaces = 2,
+			Format = "LuckModifiedPercent",
+			HideSigns = true,
+		},
+		{
+			Key = "ReportedPlasmaChanceMultiplier",
+			ExtractAs = "PlasmaChanceAddition",
+			Format = "LuckModifiedPercent",
+			PlasmaAddition = true,
+			DecimalPlaces = 2,
+			SkipAutoExtract = true,
 			HideSigns = true,
 		},
 	},
 
 	ExtraFields = 
 	{
+		SpeakerNames = { "Ares" },
 		OnSprintAction = 
 		{
 			FunctionName = _PLUGIN.guid .. "." .. "TrainSprintOutcome",
 			RunOnce = true,
 			Args = 
 			{
-				Radius = 120,
-				Range = 120,
+				Radius = 160,
+				Range = 200,
 				StartDelay = 0.2,
-				Cooldown = 0.2,
-				Vfx = "AresMelBuff",
+				Cooldown = 0.5,
 				NumJumps = 1,
-				ProjectileName = "HeraSprintProjectile",
-				DamageMultiplier = { BaseValue = 1 },
+				ProjectileName = "AresTrainProjectile",
 				ReportValues = 
 				{
 					ReportedJumps = "NumJumps",
-					ReportedMultiplier = "DamageMultiplier",
 				}
 			}
 		},
 		OnEnemyDamagedAction =
 		{
-			ValidProjectiles = { "HeraSprintProjectile" },
+			ValidProjectiles = { "AresTrainProjectile" },
 			FunctionName = _PLUGIN.guid .. "." .. "CheckTrainKillDamage",
 			Args = 
 			{
-				Chance = 0.1,
+				BaseChance = 0.05,
+				PlasmaAddChance = 0.005,
 				Damage = 9999,
-				Vfx = "ZeusLightningIris",
-				ReportValues = { ReportedChance = "Chance" },
+				Vfx = "RadialNovaPentagramCharged_Ares",
+				HitSimSlowParametersFalseTraitName = "StaffRaiseDeadAspect",
+				SimSlowDistanceThreshold = 180,
+				HitSimSlowCooldown = 0.8,
+				HitSimSlowParameters =
+				{
+					{ ScreenPreWait = 0.02, Fraction = 0.13, LerpTime = 0 },
+					{ ScreenPreWait = 0.10, Fraction = 1.0, LerpTime = 0.05 },
+				},
+				ReportValues = { 
+					ReportedBaseChance = "BaseChance",
+					ReportedPlasmaChanceMultiplier = "PlasmaAddChance",
+				},
 			},
 		},
 		OnSprintStartAction = 
@@ -619,16 +667,25 @@ gods.CreateBoon({
 			Args = 
 			{
 				EffectName = "SprintStasisEffect",
-				--Interrupt = true,
-				--InterruptProjectile = "ProjectileSprintStrike",
+				Interrupt = true,
+				InterruptProjectile = "ProjectileSprintStrike",
 				Range = 120,
 				ScaleY = 0.6,
-				Cooldown = 0.5,
+				Cooldown = 0.35,
+				Vfx = "AresMelBuff",
 			}
 		},
 		OnSprintEndAction = 
 		{
 			FunctionName = _PLUGIN.guid .. "." .. "EndTrainSprintPhasing",
+			Args =
+			{
+				Vfx = "AresMelBuff",
+			},
+		},
+		TrayStatLines =
+		{
+			"ATrainStatDisplay2",
 		},
     },
-})]]
+})
