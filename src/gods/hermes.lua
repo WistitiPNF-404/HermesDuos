@@ -451,6 +451,67 @@ gods.CreateBoon({
     },
 })]]
 
+-- Hermes x Hephaestus
+gods.CreateBoon({
+	pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "MoneyToShieldBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 17 },
+	reuseBaseIcons = true,
+
+    displayName = "Sturdy Investment",
+    description = "You gain {!Icons.ArmorTotal} whenever you spend or lose {!Icons.Currency}.",
+	StatLines = { "ArmorCostStatDisplay1" },
+    customStatLine = {
+        Id = "ArmorCostStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point Gained:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
+			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_43",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+		{
+			Key = "ReportedMultiplier",
+			ExtractAs = "TooltipArmorGain",
+		},
+	},
+
+	ExtraFields = 
+	{
+		GoldtoArmorData = 
+		{
+			GoldCost = 5,
+			ArmorGain = 1,
+			Name = "CostumeArmor",
+			Args = {
+				Source = "GoldToArmorSource",
+				Delay = 0,
+				BaseAmount = {
+					BaseValue = 0,
+				},
+				ReportValues = {
+					ReportedExtraArmor = "BaseAmount",
+				},
+			},
+			ReportValues = { ReportedMultiplier = "GoldCost" }
+		},
+    },
+})
+
 -- Hermes x Hestia
 gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
@@ -460,7 +521,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 17 },
+    addToExistingGod = { boonPosition = 18 },
 	reuseBaseIcons = true,
 
     displayName = "Aerobic Capacity",
@@ -558,7 +619,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 18 },
+    addToExistingGod = { boonPosition = 19 },
 	reuseBaseIcons = true,
 
     displayName = "Train Wreck",
@@ -619,22 +680,16 @@ gods.CreateBoon({
 	ExtraFields = 
 	{
 		SpeakerNames = { "Ares" },
-		OnSprintAction = 
+		OnEffectApplyFunction =
 		{
-			FunctionName = _PLUGIN.guid .. "." .. "TrainSprintOutcome",
+			FunctionName = _PLUGIN.guid .. "." .. "CheckTrainStatis",
 			RunOnce = true,
-			Args = 
+			FunctionArgs = 
 			{
-				Radius = 160,
-				Range = 200,
 				StartDelay = 0.2,
-				Cooldown = 0.5,
-				NumJumps = 1,
+				Cooldown = 0.4,
+				EffectName = "SprintStasisEffect", 
 				ProjectileName = "AresTrainProjectile",
-				ReportValues = 
-				{
-					ReportedJumps = "NumJumps",
-				}
 			}
 		},
 		OnEnemyDamagedAction =
@@ -655,6 +710,16 @@ gods.CreateBoon({
 					{ ScreenPreWait = 0.02, Fraction = 0.13, LerpTime = 0 },
 					{ ScreenPreWait = 0.10, Fraction = 1.0, LerpTime = 0.05 },
 				},
+				BloodDropAmount = 3,
+				BloodDropArgs = 
+				{
+					Name = "BloodDrop",
+					DoubleChance = false,
+					ReportValues = 
+					{ 
+						ReportedChance = "DoubleChance",
+					},
+				},
 				ReportValues = { 
 					ReportedBaseChance = "BaseChance",
 					ReportedPlasmaChanceMultiplier = "PlasmaAddChance",
@@ -667,11 +732,11 @@ gods.CreateBoon({
 			Args = 
 			{
 				EffectName = "SprintStasisEffect",
-				Interrupt = true,
-				InterruptProjectile = "ProjectileSprintStrike",
+				--Interrupt = true,
+				--InterruptProjectile = "ProjectileSprintStrike",
 				Range = 120,
 				ScaleY = 0.6,
-				Cooldown = 0.35,
+				Cooldown = 0.5,
 				Vfx = "AresMelBuff",
 			}
 		},

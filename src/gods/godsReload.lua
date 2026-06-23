@@ -141,6 +141,28 @@ end
 	SwapWeapon({ Name = "WeaponCast", SwapWeaponName = "WeaponTeleportCast", DestinationId = unit.ObjectId, StompOriginalWeapon = true })
 end]]
 
+-- Hermes x Hephaestus
+
+modutil.mod.Path.Wrap("SpendResource", function (baseFunc, name, amount, source, args)
+	if HasHeroTraitValue("GoldtoArmorData") then
+		local goldToArmorData = GetHeroTraitValues("GoldtoArmorData")[1]
+		local moneyCost = math.ceil(goldToArmorData.GoldCost)
+		local currentMoney = GetResourceAmount( "Money" )
+		local armorGained = 0
+		if currentMoney >= moneyCost then
+			local oldGoldToArmorSource = MapState.HealthBufferSources[ "GoldToArmorSource" ] or 0
+			armorGained = amount / moneyCost
+			AddHealthBuffer( oldGoldToArmorSource + armorGained, "GoldToArmorSource", { Silent = true } )
+			CurrentRun.HasMoneyForArmor = true
+		else
+			if CurrentRun.HasMoneyForArmor then
+				CurrentRun.HasMoneyForArmor = nil
+			end
+		end
+	end
+	return baseFunc(name, amount, source, args)
+end)
+
 -- Hermes x Hestia
 function mod.FireballSprintSetup ( weaponData, traitArgs, triggerArgs )
 	--CreateAnimation({ Name = "HestiaFlameLoopCombined", DestinationId = CurrentRun.Hero.ObjectId })
@@ -204,6 +226,12 @@ function mod.CheckTrainSprintPhasingCollision( args )
 		for _, id in pairs( ids ) do
 			local enemy = ActiveEnemies[id]
 			if enemy and enemy.ActivationFinished and CheckCooldown( id .. "SprintFreeze", args.Cooldown ) and enemy and not enemy.IsBoss and not enemy.IgnoreSprintPhasingStasisStun then
+				local effectName = args.EffectName
+				if effectName then
+					thread( SprintPhasingUnitPresentation, enemy )
+					thread( SprintPhasingMelPresentation, CurrentRun.Hero )
+					ApplyEffect({ DestinationId = id, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = EffectData[effectName].DataProperties })
+				end
 				if args.Interrupt then
 					thread( TemporaryMuteStunImmunity, enemy, "OnSprintHitStun")
 					CreateProjectileFromUnit({ Name = args.InterruptProjectile, Id = CurrentRun.Hero.ObjectId, DestinationId = id, FireFromTarget = true })
@@ -226,20 +254,16 @@ function mod.EndTrainSprintPhasing ( args, triggerArgs )
 	killTaggedThreads( mod.StartTrainSprintPhasing )
 end
 
-function mod.TrainSprintOutcome( functionArgs )
+function mod.CheckTrainStatis( victim, functionArgs, triggerArgs )
 	if not SessionMapState.SprintActive or not SessionMapState.SprintStartTime or ( functionArgs.StartDelay and (_worldTimeUnmodified - SessionMapState.SprintStartTime) < functionArgs.StartDelay ) then
 		return
 	end
-	if CheckCooldown( "HeraSprintSuction", functionArgs.Cooldown, true) then
-		local enemyId = GetClosest({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, StopsProjectiles = true, Distance = functionArgs.Radius, PreciseCollision = true })
-		modutil.mod.Hades.PrintOverhead("Hit "..(enemyId), 1)
-		if enemyId and ActiveEnemies[enemyId] and not ActiveEnemies[enemyId].IsDead then
-			local enemy = ActiveEnemies[enemyId]
-			if enemy.DamageSurrogate ~= nil then
-				enemy = enemy.DamageSurrogate
-			end
-			if functionArgs.ProjectileName then
-				thread( mod.AftermathProjectile, enemyId, functionArgs )
+	if triggerArgs.EffectName == "SprintStasisEffect" and not triggerArgs.Reapplied then
+		if victim.ActiveEffects then
+			if victim.ActiveEffects[functionArgs.EffectName] then
+				if victim and not victim.IsDead then
+					thread( mod.AftermathProjectile, victim.ObjectId, functionArgs )
+				end
 			end
 		end
 	end
@@ -271,6 +295,9 @@ function mod.CheckTrainKillDamage( enemy, traitArgs, triggerArgs )
 	local damageAmount = traitArgs.Damage
 	thread( mod.DoTrainKillDamage, enemy, traitArgs, damageAmount )
 	ShakeScreen({ Angle = 90, Distance = 6, Speed = 300, FalloffSpeed = 600, Duration = 0.25 })
+	for i = 1, traitArgs.BloodDropAmount do
+		CreateBloodDrop( enemy, traitArgs.BloodDropArgs )
+	end
 end
 
 function mod.DoTrainKillDamage( enemy, traitArgs, damageAmount )
