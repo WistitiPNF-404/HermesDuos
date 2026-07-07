@@ -1,3 +1,4 @@
+-- Hermes x Ares
 gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
     characterName = "Ares",

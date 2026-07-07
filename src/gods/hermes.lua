@@ -1,3 +1,115 @@
+-- Hermes x Zeus
+gods.CreateBoon({
+	pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "InstantDashBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 14 },
+	reuseBaseIcons = true,
+
+    displayName = "Zap Dart",
+    description = "Your {$Keywords.Dash} travels instantly, and run {#BoldFormatGraft}+100% {#Prev} faster at the start of your {$Keywords.Sprint}.",
+	StatLines = { "GoldenRatioStatDisplay1" },
+    customStatLine = {
+        Id = "SuperSpeedDurationStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Bonus Speed Duration:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "PoseidonCastBoon", "PoseidonSprintBoon", "PoseidonManaBoon" },
+			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
+			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_43",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+		{
+			Key = "ReportedReduction",
+			ExtractAs = "TooltipData",
+			Format = "Percent",
+		},
+	},
+
+	ExtraFields = 
+	{
+		OnSprintAction =
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "OnZapDashStart",
+			RunOnce = true,
+			Args = 
+			{
+				--SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
+				ZapBuffDuration = 0.5,
+				ZapPropertyChanges = {
+					{
+						WeaponNames = { "WeaponSprint" },
+						WeaponProperty = "SelfVelocity",
+						BaseValue = 1980,
+						ChangeType = "Add",
+						ExcludeLinked = true,
+					},
+					{
+						WeaponNames = { "WeaponSprint" },
+						WeaponProperty = "SelfVelocityCap",
+						BaseValue = 890,
+						ChangeType = "Add",
+						ExcludeLinked = true,
+					},
+					{
+						WeaponName = "WeaponSprint",
+						EffectName = "ChaosControl",
+						EffectProperty = "Active",
+						ChangeValue = true,
+						ExcludeLinked = true,
+					},
+				},
+			},
+		},
+		PropertyChanges =
+		{
+			{
+				WeaponNames = WeaponSets.HeroBlinkWeapons,
+				WeaponProperty = "BlinkDuration",
+				BaseValue = 0.2,
+				SourceIsMultiplier = true,
+				DecimalPlaces = 3,
+				ChangeType = "Multiply",
+				ReportValues = { ReportedReduction = "ChangeValue"},
+			},
+			--[[{
+				WeaponNames = { "WeaponSprint" },
+				WeaponProperty = "SelfVelocity",
+				BaseValue = 1980,
+				ChangeType = "Add",
+				ExcludeLinked = true,
+			},
+			{
+				WeaponNames = { "WeaponSprint" },
+				WeaponProperty = "SelfVelocityCap",
+				BaseValue = 890,
+				ChangeType = "Add",
+				ExcludeLinked = true,
+			},
+			{
+				WeaponName = "WeaponSprint",
+				EffectName = "ChaosControl",
+				EffectProperty = "Active",
+				ChangeValue = true,
+				ExcludeLinked = true,
+			},]]
+		},
+    },
+})
+
 -- Hermes x Hera
 gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
@@ -7,7 +119,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 14 },
+    addToExistingGod = { boonPosition = 15 },
 	reuseBaseIcons = true,
 
     displayName = "Royal Propagation",
@@ -108,7 +220,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 15 },
+    addToExistingGod = { boonPosition = 16 },
 	reuseBaseIcons = true,
 
     displayName = "Gilded Hook",
@@ -162,7 +274,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 16 },
+    addToExistingGod = { boonPosition = 17 },
 	reuseBaseIcons = true,
 
     displayName = "Hurricane Eye",
@@ -460,23 +572,24 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 17 },
+    addToExistingGod = { boonPosition = 18 },
 	reuseBaseIcons = true,
 
     displayName = "Sturdy Investment",
-    description = "You gain {!Icons.ArmorTotal} whenever you spend or lose {!Icons.Currency}.",
+    description = "You gain {!Icons.ArmorTotal} upon spending or losing {!Icons.Currency}.",
 	StatLines = { "ArmorCostStatDisplay1" },
     customStatLine = {
         Id = "ArmorCostStatDisplay1",
         displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point Gained:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        description = "{#MoneyFormatBold}-{$TooltipData.ExtractData.TooltipArmorGain}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
-			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
+			{ "HephaestusWeaponBoon", "HephaestusSpecialBoon", "HephaestusCastBoon", "HephaestusSprintBoon", "HephaestusManaBoon" },
 			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
+			{ "HeavyArmorBoon", "ArmorBoon", "EncounterStartDefenseBuffBoon" },
 		},
 	},
     boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_43",
@@ -486,6 +599,7 @@ gods.CreateBoon({
 	{
 		{
 			Key = "ReportedMultiplier",
+			SkipAutoExtract = true,
 			ExtractAs = "TooltipArmorGain",
 		},
 	},
@@ -496,18 +610,7 @@ gods.CreateBoon({
 		{
 			GoldCost = 5,
 			ArmorGain = 1,
-			Name = "CostumeArmor",
-			Args = {
-				Source = "GoldToArmorSource",
-				Delay = 0,
-				BaseAmount = {
-					BaseValue = 0,
-				},
-				ReportValues = {
-					ReportedExtraArmor = "BaseAmount",
-				},
-			},
-			ReportValues = { ReportedMultiplier = "GoldCost" }
+			ReportValues = { ReportedMultiplier = "GoldCost" },
 		},
     },
 })
@@ -521,7 +624,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 18 },
+    addToExistingGod = { boonPosition = 19 },
 	reuseBaseIcons = true,
 
     displayName = "Aerobic Capacity",
@@ -619,7 +722,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 19 },
+    addToExistingGod = { boonPosition = 20 },
 	reuseBaseIcons = true,
 
     displayName = "Train Wreck",
@@ -679,6 +782,8 @@ gods.CreateBoon({
 
 	ExtraFields = 
 	{
+		AcquireFunctionName = "SetupBloodDropDisplay",
+		OnExpire = { FunctionName = "CheckBloodDropDisplay", },
 		SpeakerNames = { "Ares" },
 		OnEffectApplyFunction =
 		{

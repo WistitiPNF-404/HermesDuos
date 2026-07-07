@@ -1,3 +1,45 @@
+-- Hermes x Zeus
+function mod.OnZapDashStart( args )
+	--[[local traitData = GetHeroTrait(gods.GetInternalBoonName("InstantDashBoon"))
+
+	local effectName = "SpeedBoostEffect"
+	local dataProperties = ShallowCopyTable(EffectData[effectName].DataProperties )
+	dataProperties.Modifier = traitData.OnBlinkEndAction.FunctionArgs.SpeedMultiplier
+	dataProperties.Duration = traitData.OnBlinkEndAction.FunctionArgs.Duration
+	
+	local baseSpeed = GetBaseDataValue({ Type = "Unit", Name = "_PlayerUnit", Property = "Speed" })
+	local currentSpeed = GetUnitDataValue({ Id = CurrentRun.Hero.ObjectId, Property = "Speed" })
+	local targetSpeed = baseSpeed * traitData.OnBlinkEndAction.FunctionArgs.SpeedMultiplier
+	
+	SetUnitProperty({ DestinationId = CurrentRun.Hero.ObjectId, Property = "MaxSpeed", Value = targetSpeed })
+
+	ApplyEffect({DestinationId = CurrentRun.Hero.ObjectId, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = dataProperties })
+
+    --ApplyUnitPropertyChanges( CurrentRun.Hero, traitData.PropertyChanges, true)
+	local notifyName = _PLUGIN.guid .. "ZapDashWaiter"
+    game.NotifyOnControlReleased({
+        Names = { "Rush" },
+        Notify = notifyName,
+        Timeout = 0.5
+    })
+	waitUntil( notifyName )
+	--ApplyUnitPropertyChanges( CurrentRun.Hero, traitData.PropertyChanges, true, true)
+    SetUnitProperty({ DestinationId = CurrentRun.Hero.ObjectId, Property = "MaxSpeed", Value = currentSpeed })
+	modutil.mod.Hades.PrintOverhead(notifyName)]]
+
+   if game.IsControlDown({ Name = "Rush" }) then   
+      ApplyUnitPropertyChanges(CurrentRun.Hero, args.ZapPropertyChanges)
+      local notifyName = _PLUGIN.guid .. "ZapDashWaiter"
+      game.NotifyOnControlReleased({
+          Names = { "Rush" },
+          Notify = notifyName,
+          Timeout = args.ZapBuffDuration
+      })
+      game.waitUntil(notifyName)
+      ApplyUnitPropertyChanges(CurrentRun.Hero, args.ZapPropertyChanges, true, true)
+   end
+end
+
 -- Hermes x Hera
 function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
 	if triggerArgs.EffectName == "DamageShareEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then 
@@ -6,7 +48,6 @@ function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
 			if enemy ~= victim and not enemy.SkipModifiers and enemy.ActiveEffects then
 				for effectName, effectStacks in pairs(enemy.ActiveEffects) do
 					if functionArgs.ValidStatusNames[effectName] and activeCurses[effectName] then
-						-- unfortunately (fortunately?) we only store stacks on the unit, we'll have to dig to get other salient data :T @alice
 						if effectName == "BurnEffect" then
 							if not activeCurses[effectName].NumStacks or activeCurses[effectName].NumStacks < effectStacks then
 								activeCurses[effectName].NumStacks = effectStacks
@@ -152,7 +193,7 @@ modutil.mod.Path.Wrap("SpendResource", function (baseFunc, name, amount, source,
 		if currentMoney >= moneyCost then
 			local oldGoldToArmorSource = MapState.HealthBufferSources[ "GoldToArmorSource" ] or 0
 			armorGained = amount / moneyCost
-			AddHealthBuffer( oldGoldToArmorSource + armorGained, "GoldToArmorSource", { Silent = true } )
+			AddArmor( oldGoldToArmorSource + armorGained, { Silent = true } )
 			CurrentRun.HasMoneyForArmor = true
 		else
 			if CurrentRun.HasMoneyForArmor then
