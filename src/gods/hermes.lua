@@ -1,8 +1,8 @@
 -- Hermes x Zeus
-gods.CreateBoon({
+--[[gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
     characterName = "Hermes",
-	internalBoonName = "InstantDashBoon",
+	internalBoonName = "TeleportBurstBoon",
     isLegendary = false,
 	InheritFrom = {
 		"SynergyTrait",
@@ -11,7 +11,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Zap Dart",
-    description = "Your {$Keywords.Dash} travels instantly, and run {#BoldFormatGraft}+100% {#Prev} faster at the start of your {$Keywords.Sprint}.",
+    description = "You may {$Keywords.Cast} again to teleport to your binding circle, and unleash a burst attack when reappearing.",
 	StatLines = { "GoldenRatioStatDisplay1" },
     customStatLine = {
         Id = "SuperSpeedDurationStatDisplay1",
@@ -47,31 +47,8 @@ gods.CreateBoon({
 			RunOnce = true,
 			Args = 
 			{
-				--SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
+				SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
 				ZapBuffDuration = 0.5,
-				ZapPropertyChanges = {
-					{
-						WeaponNames = { "WeaponSprint" },
-						WeaponProperty = "SelfVelocity",
-						BaseValue = 1980,
-						ChangeType = "Add",
-						ExcludeLinked = true,
-					},
-					{
-						WeaponNames = { "WeaponSprint" },
-						WeaponProperty = "SelfVelocityCap",
-						BaseValue = 890,
-						ChangeType = "Add",
-						ExcludeLinked = true,
-					},
-					{
-						WeaponName = "WeaponSprint",
-						EffectName = "ChaosControl",
-						EffectProperty = "Active",
-						ChangeValue = true,
-						ExcludeLinked = true,
-					},
-				},
 			},
 		},
 		PropertyChanges =
@@ -85,30 +62,9 @@ gods.CreateBoon({
 				ChangeType = "Multiply",
 				ReportValues = { ReportedReduction = "ChangeValue"},
 			},
-			--[[{
-				WeaponNames = { "WeaponSprint" },
-				WeaponProperty = "SelfVelocity",
-				BaseValue = 1980,
-				ChangeType = "Add",
-				ExcludeLinked = true,
-			},
-			{
-				WeaponNames = { "WeaponSprint" },
-				WeaponProperty = "SelfVelocityCap",
-				BaseValue = 890,
-				ChangeType = "Add",
-				ExcludeLinked = true,
-			},
-			{
-				WeaponName = "WeaponSprint",
-				EffectName = "ChaosControl",
-				EffectProperty = "Active",
-				ChangeValue = true,
-				ExcludeLinked = true,
-			},]]
 		},
     },
-})
+})]]
 
 -- Hermes x Hera
 gods.CreateBoon({
@@ -390,32 +346,31 @@ gods.CreateBoon({
 })
 
 -- Hermes x Apollo
---[[gods.CreateBoon({
+gods.CreateBoon({
     pluginGUID = _PLUGIN.guid,
     characterName = "Hermes",
-	internalBoonName = "CastTeleportBoon",
+	internalBoonName = "CastWarZoneBoon",
     isLegendary = false,
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 16 },
+    addToExistingGod = { boonPosition = 18 },
 	reuseBaseIcons = true,
 
-    displayName = "Luminous Warp",
-    description = "Hold {$Keywords.Cast} to aim where the binding circle appears, and teleport there.",
-	StatLines = { "BiggerCastStatDisplay1" },
+    displayName = "Golden Prodigy",
+    description = "While you stand in your {$Keywords.CastSet}, restore some {!Icons.Health} of any damage you deal.",
+	StatLines = { "LifeRestorationStatDisplay1" },
     customStatLine = {
-        Id = "BiggerCastStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Cast Size:",
+        Id = "LifeRestorationStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Life Restoration:",
         description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
-			{ "DemeterWeaponBoon", "DemeterSpecialBoon", "DemeterCastBoon" },
-			{ "DemeterSprintBoon", "CastNovaBoon" },
-			{ "SlowExAttackBoon", "CastAttachBoon", "RootDurationBoon" },
+			{ "ApolloCastBoon", "ApolloSprintBoon", "ApolloManaBoon" },
+			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
 		},
 	},
     boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_41",
@@ -424,144 +379,125 @@ gods.CreateBoon({
 	ExtractValues =
 	{
         {
-            Key = "ReportedAreaMultiplier",
-            ExtractAs = "Damage",
-            Format = "PercentDelta"
+            Key = "ReportedLifeStealAmount",
+            ExtractAs = "Lifesteal",
+            Format = "Percent"
         },
 	},
 
 	ExtraFields = 
 	{
-        PreEquipWeapons = { "WeaponTeleportCast" },
-        GameStateRequirements =
+		OnWeaponFiredFunctions =
 		{
+			ValidWeapons = WeaponSets.HeroNonPhysicalWeapons,
+			FunctionName = _PLUGIN.guid .. "." .. "InsideCastHealPresentation",
+			FunctionArgs =
 			{
-				Path = { "CurrentRun", "Hero", "TraitDictionary", },
-				HasNone = { "WeaponAnywhereCast", "CastProjectileBoon", "HadesCastProjectileBoon", "CastLobBoon", "SelfCastBoon" },
+				Vfx = "HermesWingsBuff",
 			},
 		},
-        OverrideWeaponFireNames =
+		OnEffectClearFunction = 
 		{
-			RangedWeapon = "nil",
-			WeaponTeleportCast = "WeaponCast",
+			FunctionName = _PLUGIN.guid .. "." .. "EndInsideCastHealPresentation",
+			FunctionArgs =
+			{
+				EffectName = "InsideCastBuff",
+				Vfx = "HermesWingsBuff",
+			},
 		},
-        WeaponDataOverride = 
+        AddOutgoingLifestealModifiers =
 		{
-			WeaponCast = 
-			{
-				UnarmedCastCompleteGraphic = "nil",
-				Sounds = 
-				{
-					FireSounds = 
-					{
-						{ Name = "/Leftovers/SFX/WyrmCastAttack" },
-					}
-				}
-			}
-		},
-        SetupFunction =
-		{
-			Name = _PLUGIN.guid .. "." .. "SetupTeleportCast",
-			RunOnce = true,
-		},
-		CastProjectileModifiers =
-        {
-            AreaIncrease =
-            {
-                CastSizeBonus = 1.3,
-                SourceIsMultiplier = true,
-				MinMultiplier = 0.1,
-                IdenticalMultiplier =
-				{
-					Value = -0.75,
-					DiminishingReturnsMultiplier = 0.75,
-				},
-            },
-            ReportValues = { ReportedAreaMultiplier = "AreaIncrease"}
-        },
-		PropertyChanges =
-		{
-			{
-				WeaponName = "WeaponCast",
-				WeaponProperties = 
-				{
-					IgnoreOwnerAttackDisabled = true,
-					Cooldown = 0,
-					ChargeTime = 0,
-					SelfVelocity = 0,
-					FireGraphic = "null",
-					AllowMultiFireRequest = true,
-					RootOwnerWhileFiring = false,
-					ChargeStartAnimation = "null",
-					SetCompleteAngleOnFire = true,
-					IgnoreForceCooldown = true,
-					AllowExternalForceRelease = false,
-					AddOnFire = "null",
-				},
-				ExcludeLinked = true,
+			ValidMultiplier = 0.01,
+			MinLifesteal = 1,
+			RequiredEffect = "InsideCastBuff",
+			Unmultiplied = true,
+			ReportValues = 
+			{ 
+				ReportedLifeStealAmount = "ValidMultiplier",
 			},
-			{
-				WeaponName = "WeaponTeleportCast",
-				ProjectileProperty = "Damage",
-				BaseValue = 0,
-				ChangeType = "Absolute",
-				ReportValues = { ReportedDamage = "ChangeValue" },
-				IdenticalMultiplier =
-				{
-					Value = -0.6,
-					MinMultiplier = 0.4,
-				},
-				ExcludeLinked = true,
-			},
-			{
-				WeaponName = "WeaponCast",
-				EffectName = "WeaponCastAttackDisable",
-				EffectProperty = "Active",
-				ChangeValue = false,
-				ChangeType = "Absolute",
-			},
-			{
-				WeaponName = "WeaponCast",
-				EffectName = "WeaponCastSelfSlow",
-				EffectProperty = "Active",
-				ChangeValue = false,
-				ChangeType = "Absolute",
-			},
-			{
-				WeaponName = "WeaponCast",
-				EffectName = "WeaponCastSelfSlow2",
-				EffectProperty = "Active",
-				ChangeValue = false,
-				ChangeType = "Absolute",
-			},
-			{
-				WeaponName = "WeaponAxeSpin",
-				WeaponProperty = "RemoveControlOnCharge",
-				ChangeValue = "WeaponTeleportCast",
-			},
-			{
-				WeaponName = "WeaponAxeSpin",
-				WeaponProperty = "AddControlOnFireEnd",
-				ChangeValue = "WeaponTeleportCast",
-			},
-			{
-				WeaponName = "WeaponAxeSpecialSwing",
-				WeaponProperty = "RemoveControlOnCharge",
-				ChangeValue = "WeaponTeleportCast",
-			},
-			{
-				WeaponName = "WeaponAxeSpecialSwing",
-				WeaponProperty = "AddControlOnFire",
-				ChangeValue = "WeaponTeleportCast",
-			},
-			{
-				WeaponName = "WeaponAxeSpecialSwing",
-				WeaponProperty = "AddControlOnChargeCancel",
-				ChangeValue = "WeaponTeleportCast",
-			}
 		},
     },
-})]]
+})
+
+-- Hermes x Aphrodite
+gods.CreateBoon({
+    pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "OnlyFansBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 19 },
+	reuseBaseIcons = true,
+
+    displayName = "Fanatic Exclusivity",
+    description = "Inflicting {$Keywords.Weak} on foes may {$Keywords.Charm} them. Any foes they strike gains you {#MoneyFormatBold}+5 {#Prev}{!Icons.Currency}.",
+	StatLines = { "CharmChanceStatDisplay1" },
+    customStatLine = {
+        Id = "CharmChanceStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Charm Chance:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "AphroditeCastBoon", "AphroditeSprintBoon", "AphroditeManaBoon" },
+			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_42",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+        {
+			Key = "ReportedCharmChance",
+			ExtractAs = "CharmChance",
+			Format = "LuckModifiedPercent",
+		},
+		{
+			ExtractAs = "TooltipWeakDuration",
+			SkipAutoExtract = true,
+			External = true,
+			BaseType = "EffectData",
+			BaseName = "WeakEffect",
+			BaseProperty = "Duration",
+		},
+		{
+			ExtractAs = "TooltipWeakModifier",
+			SkipAutoExtract = true,
+			External = true,
+			BaseType = "EffectData",
+			BaseName = "WeakEffect",
+			BaseProperty = "Modifier",
+			Format = "NegativePercentDelta"
+		},
+	},
+
+	ExtraFields = 
+	{
+		OnEffectApplyFunction =
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "WeakToCharmChance",
+			FunctionArgs =
+			{
+				CharmChance = 0.25,
+				EffectName = "Charm",
+				ReportValues = { ReportedCharmChance = "CharmChance" },
+			},
+		},
+		CharmDataModifiers =
+		{
+			OnHitGoldModifiers =
+			{
+				GoldAddition = 5,
+				ReportValues = { ReportedGoldBonus = "GoldAddition" },
+			},
+		},
+    },
+})
 
 -- Hermes x Hephaestus
 gods.CreateBoon({
@@ -572,7 +508,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 18 },
+    addToExistingGod = { boonPosition = 20 },
 	reuseBaseIcons = true,
 
     displayName = "Sturdy Investment",
@@ -624,7 +560,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 19 },
+    addToExistingGod = { boonPosition = 21 },
 	reuseBaseIcons = true,
 
     displayName = "Aerobic Capacity",
@@ -722,7 +658,7 @@ gods.CreateBoon({
 	InheritFrom = {
 		"SynergyTrait",
 	},
-    addToExistingGod = { boonPosition = 20 },
+    addToExistingGod = { boonPosition = 22 },
 	reuseBaseIcons = true,
 
     displayName = "Train Wreck",
@@ -859,3 +795,91 @@ gods.CreateBoon({
 		},
     },
 })
+
+--[[gods.CreateBoon({
+	pluginGUID = _PLUGIN.guid,
+    characterName = "Hermes",
+	internalBoonName = "InstantDashBoon",
+    isLegendary = false,
+	InheritFrom = {
+		"SynergyTrait",
+	},
+    addToExistingGod = { boonPosition = 14 },
+	reuseBaseIcons = true,
+
+    displayName = "Zap Dart",
+    description = "Your {$Keywords.Dash} travels instantly, and run {#BoldFormatGraft}+100% {#Prev} faster at the start of your {$Keywords.Sprint}.",
+	StatLines = { "GoldenRatioStatDisplay1" },
+    customStatLine = {
+        Id = "SuperSpeedDurationStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Bonus Speed Duration:",
+        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+    },
+	requirements =
+	{
+		OneFromEachSet =
+		{
+			{ "PoseidonCastBoon", "PoseidonSprintBoon", "PoseidonManaBoon" },
+			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
+			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
+		},
+	},
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_43",
+	--boonIconScale = 1.66,
+    
+	ExtractValues =
+	{
+		{
+			Key = "ReportedReduction",
+			ExtractAs = "TooltipData",
+			Format = "Percent",
+		},
+	},
+
+	ExtraFields = 
+	{
+		OnSprintAction =
+		{
+			FunctionName = _PLUGIN.guid .. "." .. "OnZapDashStart",
+			RunOnce = true,
+			Args = 
+			{
+				SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
+				ZapBuffDuration = 0.5,
+			},
+		},
+		PropertyChanges =
+		{
+			{
+				WeaponNames = WeaponSets.HeroBlinkWeapons,
+				WeaponProperty = "BlinkDuration",
+				BaseValue = 0.2,
+				SourceIsMultiplier = true,
+				DecimalPlaces = 3,
+				ChangeType = "Multiply",
+				ReportValues = { ReportedReduction = "ChangeValue"},
+			},
+			--[[{
+				WeaponNames = { "WeaponSprint" },
+				WeaponProperty = "SelfVelocity",
+				BaseValue = 1980,
+				ChangeType = "Add",
+				ExcludeLinked = true,
+			},
+			{
+				WeaponNames = { "WeaponSprint" },
+				WeaponProperty = "SelfVelocityCap",
+				BaseValue = 890,
+				ChangeType = "Add",
+				ExcludeLinked = true,
+			},
+			{
+				WeaponName = "WeaponSprint",
+				EffectName = "ChaosControl",
+				EffectProperty = "Active",
+				ChangeValue = true,
+				ExcludeLinked = true,
+			},
+		},
+    },
+})]]

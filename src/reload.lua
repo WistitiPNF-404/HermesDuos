@@ -21,9 +21,9 @@ function prefix_SetupMap()
 	-- LoadPackages({Name = package_name_string})
 end
 
-function trigger_Gift()
-	modutil.mod.Hades.PrintOverhead(config.message)
-end
+
+--modutil.mod.Hades.PrintOverhead(config.message)
+
 
 
 -------------------------------------------------------------------

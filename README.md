@@ -1,13 +1,14 @@
 # Hermes Duos
 
-Hermes finally played the messenger and went ahead to cook new boons with the cooperation of his extended family; Duo boons are now available in his arsenal!
+Hermes finally played the messenger and went ahead to cook new boons with the cooperation of his extended family; fresh new Duo boons are now available in his arsenal!
 
 ## Installation
 Even though the mod has been tested thoroughly, consider backing up your save files from `%USERPROFILE%\Saved Games\Hades II\[ProfileName].sav`.
 
 ## Features
 
-- Adds 9 Duo boons for Hermes with each of the normal 9 Olympian gods of Hades II.
+- Adds 9 Duo boons for Hermes with each of the normal 9 Olympian gods of Hades II. 
+    - As any other Duo boons, these new boons can be offered by both Hermes and the Duo boon's other God (if the according requirements are met).
 - A new prophecy to collect all 9 Hermes Duo boons.
 
 ## Boon List

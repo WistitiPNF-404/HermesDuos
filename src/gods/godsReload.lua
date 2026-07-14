@@ -1,6 +1,6 @@
 -- Hermes x Zeus
-function mod.OnZapDashStart( args )
-	--[[local traitData = GetHeroTrait(gods.GetInternalBoonName("InstantDashBoon"))
+--[[function mod.OnZapDashStart( args )
+	local traitData = GetHeroTrait(gods.GetInternalBoonName("InstantDashBoon"))
 
 	local effectName = "SpeedBoostEffect"
 	local dataProperties = ShallowCopyTable(EffectData[effectName].DataProperties )
@@ -25,20 +25,8 @@ function mod.OnZapDashStart( args )
 	waitUntil( notifyName )
 	--ApplyUnitPropertyChanges( CurrentRun.Hero, traitData.PropertyChanges, true, true)
     SetUnitProperty({ DestinationId = CurrentRun.Hero.ObjectId, Property = "MaxSpeed", Value = currentSpeed })
-	modutil.mod.Hades.PrintOverhead(notifyName)]]
-
-   if game.IsControlDown({ Name = "Rush" }) then   
-      ApplyUnitPropertyChanges(CurrentRun.Hero, args.ZapPropertyChanges)
-      local notifyName = _PLUGIN.guid .. "ZapDashWaiter"
-      game.NotifyOnControlReleased({
-          Names = { "Rush" },
-          Notify = notifyName,
-          Timeout = args.ZapBuffDuration
-      })
-      game.waitUntil(notifyName)
-      ApplyUnitPropertyChanges(CurrentRun.Hero, args.ZapPropertyChanges, true, true)
-   end
-end
+	modutil.mod.Hades.PrintOverhead(notifyName)
+end]]
 
 -- Hermes x Hera
 function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
@@ -177,13 +165,74 @@ function mod.CreateOmegaGusts (weaponData, functionArgs, triggerArgs)
 end
 
 -- Hermes x Apollo
--- Setup function
---[[function SetupTeleportCast( unit, args )
-	SwapWeapon({ Name = "WeaponCast", SwapWeaponName = "WeaponTeleportCast", DestinationId = unit.ObjectId, StompOriginalWeapon = true })
-end]]
+function mod.InsideCastHealPresentation ( functionArgs )
+	wait (0.25)
+	if CurrentRun.Hero.ActiveEffects ~= nil then
+		if CurrentRun.Hero.ActiveEffects["InsideCastBuff"] then
+			CreateAnimation({ Name = "HermesWingsBuff", DestinationId = CurrentRun.Hero.ObjectId })
+		end
+	end
+end
+
+function mod.EndInsideCastHealPresentation ( functionArgs )
+	if IsEmpty( CurrentRun.Hero.ActiveEffects ) or not CurrentRun.Hero.ActiveEffects["InsideCastBuff"] then
+		StopAnimation({ Name = "HermesWingsBuff", DestinationId = CurrentRun.Hero.ObjectId })
+	end
+end
+
+-- Hermes x Aphrodite
+function mod.WeakToCharmChance ( victim, functionArgs, triggerArgs )
+	local nearbyTargetIds = GetClosestIds({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, IgnoreSelf = true, Distance = 2000 })
+	local charmedOFEnemies = {}
+	if triggerArgs.EffectName == "WeakEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then
+		--modutil.mod.Hades.PrintOverhead(functionArgs.CharmChance)
+		if RandomChance( functionArgs.CharmChance * GetTotalHeroTraitValue("LuckMultiplier", {IsMultiplier = true})) then
+			ApplyEffect({ 
+				Id = CurrentRun.Hero.ObjectId, 
+				DestinationId = victim.ObjectId, 
+				EffectName = functionArgs.EffectName or "Charm",
+				DataProperties = 
+				{
+					Type = "CHARM",
+					Duration = 8,
+					Active = true,
+					TimeModifierFraction = 0,
+				}
+			})
+		end
+		for _, id in pairs(nearbyTargetIds) do
+			if ActiveEnemies[id] and not ActiveEnemies[id].IsDead and not ActiveEnemies[id].SkipModifiers and ActiveEnemies[id].ActiveEffects["Charm"] then
+				table.insert(charmedOFEnemies, ActiveEnemies[id])
+			end
+		end
+		-- ok i'm lost from here, but i think i dont need this
+		--[[if not IsEmpty(charmedOFEnemies) then
+			if not MapState.OFCharmedEnemy or MapState.OFCharmedEnemy.IsDead then
+				MapState.OFCharmedEnemy = GetRandomValue(charmedOFEnemies)
+			end
+		end]]
+	end
+	thread(mod.CharmGiveMoney, triggerArgs )
+end
+
+function mod.CharmGiveMoney ( triggerArgs )
+	local victim = triggerArgs.Victim
+	local attacker = triggerArgs.AttackerTable
+	if victim == nil or attacker == nil then
+		return
+	end
+	if victim.Charmed then
+		if attacker ~= CurrentRun.Hero and attacker.ObjectId then -- this is where i want to check when a Charmed enemy hits another enemy
+			modutil.mod.Hades.PrintOverhead(attacker.ObjectId )
+			if IsCharmed({ Id = attacker.ObjectId }) then
+				local charmPaycheck = GetTotalHeroTraitValue( "ReportedGoldBonus" )
+				AddResource( "Money", round(charmPaycheck * GetTotalHeroTraitValue( "MoneyMultiplier", { IsMultiplier = true } )), "BonusCharmMoney" )
+			end
+		end
+	end
+end
 
 -- Hermes x Hephaestus
-
 modutil.mod.Path.Wrap("SpendResource", function (baseFunc, name, amount, source, args)
 	if HasHeroTraitValue("GoldtoArmorData") then
 		local goldToArmorData = GetHeroTraitValues("GoldtoArmorData")[1]
