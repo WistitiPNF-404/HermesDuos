@@ -1,6 +1,7 @@
 # Hermes Duos
 
 Hermes finally played the messenger and went ahead to cook new boons with the cooperation of his extended family; fresh new Duo boons are now available in his arsenal!
+
 For a better experience with the mod, please consider also installing [Wrath Of Olympus](https://thunderstore.io/c/hades-ii/p/Wistiti/WrathOfOlympus/)! 
 
 ## Installation
@@ -15,31 +16,31 @@ Even though the mod has been tested thoroughly, consider backing up your save fi
 ## Boon List
 
 ### High Tension (Zeus)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/ZeusWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/ZeusHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Royal Decree (Hera)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HeraWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/HeraHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Gilded Hook (Poseidon)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/PoseidonWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/PoseidonHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Hurricane Eye (Demeter)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/DemeterWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/DemeterHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Golden Prodigy (Apollo)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/ApolloWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/ApolloHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Adoration Fee (Aphrodite)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/AphroditeWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/AphroditeHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Sturdy Investment (Hephaestus)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HephaestusWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/HephaestusHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Aerobic Capacity (Hestia)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HestiaWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/HestiaHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ### Train Wreck (Ares)
-<img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/AresWrath_BoonPreview.png?raw=true" width="100%"/>
+<img src="https://github.com/WistitiPNF-404/HermesDuos/blob/main/imgs/AresHermesDuo_BoonPreview.png?raw=true" width="100%"/>
 
 ## Contributors
 - zanncdwbl [Github](https://github.com/zanncdwbl), created [GodsAPI](https://github.com/excellent-ae/zannc-GodsAPI)
