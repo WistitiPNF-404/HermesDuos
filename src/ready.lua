@@ -24,6 +24,7 @@ local Order = { "Id", "InheritFrom", "DisplayName", "Description" }
 local newKeywords = {
 	"ModsWistitiSlowFieldPlural",
 	"ModsWistitiExecute",
+	"ModsWistitiMagnetic",
 }
 game.ConcatTableValuesIPairs(game.KeywordList, newKeywords)
 
@@ -40,15 +41,29 @@ mod.ExecuteStatus = sjson.to_object({
 	Description = "Susceptible foes have a {#BoldFormat}{$TooltipData.ExtractData.ExecuteBaseChance}% {#Prev} chance to be destroyed outright, dropping {#BoldFormat}3 {#Prev}{!Icons.BloodDropWithCountIcon} when slained. Outcome increases with your current {!Icons.BloodDropWithCountIcon} count.",
 }, Order)
 
+mod.MagneticField = sjson.to_object({
+	Id = "ModsWistitiMagnetic",
+	DisplayName = "Magnetic Field",
+	Description = "An area that surrounds a single foe, unleashing chain-lightning upon any foes who dare draw near.",
+}, Order)
+
 mod.AresTrainBoon_CombatText = sjson.to_object({
 	Id = "AresTrain_CombatText",
 	DisplayName = "{#CombatTextHighlightFormat}{$TraitData."..(gods.GetInternalBoonName("TrainKillBoon"))..".Name}{#Prev}!",
 }, Order)
 
+mod.HermesDuoBoonProphecy_Quest = sjson.to_object({
+	Id = "ModsWistiti_QuestGetAllHermesDuoBoons",
+	DisplayName = "Duos Express",
+	Description = "The daughter of the god of the dead shall someday earn a variety of Duo Boons offered by the the God of Swiftness with his fellow Olympians.",
+}, Order)
+
 sjson.hook(HelpTextFile, function(data)
 	table.insert(data.Texts, mod.GustPlural)
 	table.insert(data.Texts, mod.ExecuteStatus)
+	table.insert(data.Texts, mod.MagneticField)
 	table.insert(data.Texts, mod.AresTrainBoon_CombatText)
+	table.insert(data.Texts, mod.HermesDuoBoonProphecy_Quest)
 end)
 
 ResetKeywords()
@@ -94,6 +109,55 @@ game.OverwriteTableKeys( game.ScreenData.RunClear.DamageSourceMap, {
 	ProjectileSprintFireball = "Aerobic Capacity",
 	AresTrainProjectile = "Train Wreck",
 })
+
+local newQuestOrderData = {
+	"ModsWistiti_QuestGetAllHermesDuoBoons",
+}
+game.ConcatTableValuesIPairs(game.QuestOrderData, newQuestOrderData)
+
+local newQuestData = {
+	ModsWistiti_QuestGetAllHermesDuoBoons = {
+		Name = "ModsWistiti_QuestGetAllHermesDuoBoons",
+		InheritFrom = { "DefaultQuestItem", "DefaultOlympianQuest" },
+		RewardResourceName = "WeaponPointsRare",
+		RewardResourceAmount = 5,
+		UnlockGameStateRequirements = {
+			{
+				Path = { "GameState", "TraitsTaken" },
+				CountOf = {
+					gods.GetInternalBoonName("ZappyFieldBoon"),
+					gods.GetInternalBoonName("OopsAllCursedBoon"),
+					gods.GetInternalBoonName("MoneyMoreDamageBoon"),
+					gods.GetInternalBoonName("GustsOrbitBoon"),
+					gods.GetInternalBoonName("CastWarZoneBoon"),
+					gods.GetInternalBoonName("OnlyFansBoon"),
+					gods.GetInternalBoonName("MoneyToShieldBoon"),
+					gods.GetInternalBoonName("FireballSprintBoon"),
+					gods.GetInternalBoonName("TrainKillBoon"),
+				},
+				Comparison = ">=",
+				Value = 1,
+			},
+		},
+		CompleteGameStateRequirements = {
+			{
+				Path = { "GameState", "TraitsTaken" },
+				HasAll = {
+					gods.GetInternalBoonName("ZappyFieldBoon"),
+					gods.GetInternalBoonName("OopsAllCursedBoon"),
+					gods.GetInternalBoonName("MoneyMoreDamageBoon"),
+					gods.GetInternalBoonName("GustsOrbitBoon"),
+					gods.GetInternalBoonName("CastWarZoneBoon"),
+					gods.GetInternalBoonName("OnlyFansBoon"),
+					gods.GetInternalBoonName("MoneyToShieldBoon"),
+					gods.GetInternalBoonName("FireballSprintBoon"),
+					gods.GetInternalBoonName("TrainKillBoon"),
+				},
+			},
+		},
+	},
+}
+game.QuestData["ModsWistiti_QuestGetAllHermesDuoBoons"] = newQuestData.ModsWistiti_QuestGetAllHermesDuoBoons
 
 function mod.readSjson(file,data,key)
     local fileHandle = io.open(file,"r")

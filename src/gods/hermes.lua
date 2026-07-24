@@ -1,8 +1,8 @@
 -- Hermes x Zeus
---[[gods.CreateBoon({
+gods.CreateBoon({
 	pluginGUID = _PLUGIN.guid,
     characterName = "Hermes",
-	internalBoonName = "TeleportBurstBoon",
+	internalBoonName = "ZappyFieldBoon",
     isLegendary = false,
 	InheritFrom = {
 		"SynergyTrait",
@@ -10,61 +10,58 @@
     addToExistingGod = { boonPosition = 14 },
 	reuseBaseIcons = true,
 
-    displayName = "Zap Dart",
-    description = "You may {$Keywords.Cast} again to teleport to your binding circle, and unleash a burst attack when reappearing.",
-	StatLines = { "GoldenRatioStatDisplay1" },
+    displayName = "High Tension",
+    description = "A {$Keywords.ModsWistitiMagnetic} is applied to {#BoldFormatGraft}1 {#Prev} foe in an {$Keywords.EncounterAlt} at all times.",
+	StatLines = { "ZapDamageStatDisplay1" },
     customStatLine = {
-        Id = "SuperSpeedDurationStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Bonus Speed Duration:",
+        Id = "ZapDamageStatDisplay1",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Chain-lightning Damage:",
         description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
-			{ "PoseidonCastBoon", "PoseidonSprintBoon", "PoseidonManaBoon" },
-			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
-			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
+			{ "ZeusWeaponBoon", "ZeusSpecialBoon", "ZeusCastBoon", "ZeusSprintBoon", "ZeusManaBoon" },
+			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_43",
+    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_45",
 	--boonIconScale = 1.66,
     
 	ExtractValues =
 	{
 		{
-			Key = "ReportedReduction",
-			ExtractAs = "TooltipData",
-			Format = "Percent",
+			External = true,
+			ExtractAs = "Damage",
+			BaseType = "ProjectileBase",
+			BaseName = "ProjectileZeusSpark",
+			BaseProperty = "Damage",
 		},
 	},
 
 	ExtraFields = 
 	{
-		OnSprintAction =
+		SetupFunction =
 		{
-			FunctionName = _PLUGIN.guid .. "." .. "OnZapDashStart",
-			RunOnce = true,
+			Threaded = true,
+			Name = _PLUGIN.guid .. "." .. "MagnetifyCrowd",
 			Args = 
 			{
-				SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
-				ZapBuffDuration = 0.5,
-			},
-		},
-		PropertyChanges =
-		{
-			{
-				WeaponNames = WeaponSets.HeroBlinkWeapons,
-				WeaponProperty = "BlinkDuration",
-				BaseValue = 0.2,
-				SourceIsMultiplier = true,
-				DecimalPlaces = 3,
-				ChangeType = "Multiply",
-				ReportValues = { ReportedReduction = "ChangeValue"},
+				Mininum = 1,
+				ProjectileName = "ProjectileZeusSpark",
+				FirstHitOnly = true,
+				WindowCount = 3, -- "clip fire cooldown. no more than Count projectiles every Duration"
+				WindowDuration = 0.75,
+				ZappingDistance = 300,
+				Cooldown = 0.5,
+				ReportedValues = { 
+					ReportedMinimum = "Minimum",
+				},
 			},
 		},
     },
-})]]
+})
 
 -- Hermes x Hera
 gods.CreateBoon({
@@ -78,7 +75,7 @@ gods.CreateBoon({
     addToExistingGod = { boonPosition = 15 },
 	reuseBaseIcons = true,
 
-    displayName = "Royal Propagation",
+    displayName = "Royal Decree",
     description = "Inflicting {$Keywords.Link} on foes applies every {$Keywords.Status} you can inflict using other abilities.",
 	StatLines = { "CursePotencyDisplay1" },
     customStatLine = {
@@ -431,8 +428,8 @@ gods.CreateBoon({
     addToExistingGod = { boonPosition = 19 },
 	reuseBaseIcons = true,
 
-    displayName = "Fanatic Exclusivity",
-    description = "Inflicting {$Keywords.Weak} on foes may {$Keywords.Charm} them. Any foes they strike gains you {#MoneyFormatBold}+5 {#Prev}{!Icons.Currency}.",
+    displayName = "Adoration Fee",
+    description = "Inflicting {$Keywords.Weak} on foes may {$Keywords.Charm} them, and any foes they strike gains you {#MoneyFormatBold}+5 {#Prev}{!Icons.Currency}.",
 	StatLines = { "CharmChanceStatDisplay1" },
     customStatLine = {
         Id = "CharmChanceStatDisplay1",
@@ -456,6 +453,7 @@ gods.CreateBoon({
 			Key = "ReportedCharmChance",
 			ExtractAs = "CharmChance",
 			Format = "LuckModifiedPercent",
+			HideSigns = true,
 		},
 		{
 			ExtractAs = "TooltipWeakDuration",
@@ -488,14 +486,16 @@ gods.CreateBoon({
 				ReportValues = { ReportedCharmChance = "CharmChance" },
 			},
 		},
-		CharmDataModifiers =
+		OnDamageEnemyFunction =
 		{
-			OnHitGoldModifiers =
+			FunctionName = _PLUGIN.guid .. "." .. "CharmHitCheck",
+			FunctionArgs =
 			{
 				GoldAddition = 5,
 				ReportValues = { ReportedGoldBonus = "GoldAddition" },
 			},
 		},
+		--TransformToMoneyChance = { BaseValue = 0.5 },
     },
 })
 
@@ -516,7 +516,7 @@ gods.CreateBoon({
 	StatLines = { "ArmorCostStatDisplay1" },
     customStatLine = {
         Id = "ArmorCostStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point Gained:",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point:",
         description = "{#MoneyFormatBold}-{$TooltipData.ExtractData.TooltipArmorGain}",
     },
 	requirements =
@@ -795,91 +795,3 @@ gods.CreateBoon({
 		},
     },
 })
-
---[[gods.CreateBoon({
-	pluginGUID = _PLUGIN.guid,
-    characterName = "Hermes",
-	internalBoonName = "InstantDashBoon",
-    isLegendary = false,
-	InheritFrom = {
-		"SynergyTrait",
-	},
-    addToExistingGod = { boonPosition = 14 },
-	reuseBaseIcons = true,
-
-    displayName = "Zap Dart",
-    description = "Your {$Keywords.Dash} travels instantly, and run {#BoldFormatGraft}+100% {#Prev} faster at the start of your {$Keywords.Sprint}.",
-	StatLines = { "GoldenRatioStatDisplay1" },
-    customStatLine = {
-        Id = "SuperSpeedDurationStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Bonus Speed Duration:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
-    },
-	requirements =
-	{
-		OneFromEachSet =
-		{
-			{ "PoseidonCastBoon", "PoseidonSprintBoon", "PoseidonManaBoon" },
-			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
-			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
-		},
-	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_43",
-	--boonIconScale = 1.66,
-    
-	ExtractValues =
-	{
-		{
-			Key = "ReportedReduction",
-			ExtractAs = "TooltipData",
-			Format = "Percent",
-		},
-	},
-
-	ExtraFields = 
-	{
-		OnSprintAction =
-		{
-			FunctionName = _PLUGIN.guid .. "." .. "OnZapDashStart",
-			RunOnce = true,
-			Args = 
-			{
-				SpeedMultiplier = { BaseValue = 10, SourceIsMultiplier = true },
-				ZapBuffDuration = 0.5,
-			},
-		},
-		PropertyChanges =
-		{
-			{
-				WeaponNames = WeaponSets.HeroBlinkWeapons,
-				WeaponProperty = "BlinkDuration",
-				BaseValue = 0.2,
-				SourceIsMultiplier = true,
-				DecimalPlaces = 3,
-				ChangeType = "Multiply",
-				ReportValues = { ReportedReduction = "ChangeValue"},
-			},
-			--[[{
-				WeaponNames = { "WeaponSprint" },
-				WeaponProperty = "SelfVelocity",
-				BaseValue = 1980,
-				ChangeType = "Add",
-				ExcludeLinked = true,
-			},
-			{
-				WeaponNames = { "WeaponSprint" },
-				WeaponProperty = "SelfVelocityCap",
-				BaseValue = 890,
-				ChangeType = "Add",
-				ExcludeLinked = true,
-			},
-			{
-				WeaponName = "WeaponSprint",
-				EffectName = "ChaosControl",
-				EffectProperty = "Active",
-				ChangeValue = true,
-				ExcludeLinked = true,
-			},
-		},
-    },
-})]]

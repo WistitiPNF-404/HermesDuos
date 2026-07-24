@@ -15,7 +15,7 @@ gods.CreateBoon({
 	StatLines = { "ArmorCostStatDisplay1" },
     customStatLine = {
         Id = "ArmorCostStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point Gained:",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Cost per Armor Point:",
         description = "{#MoneyFormatBold}-{$TooltipData.ExtractData.TooltipArmorGain}",
     },
 	requirements =

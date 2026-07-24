@@ -10,7 +10,7 @@ gods.CreateBoon({
     addToExistingGod = true,
 	reuseBaseIcons = true,
 
-    displayName = "Royal Propagation",
+    displayName = "Royal Decree",
     description = "Inflicting {$Keywords.Link} on foes applies every {$Keywords.Status} you can inflict using other abilities.",
 	StatLines = { "CursePotencyDisplay1" },
     customStatLine = {

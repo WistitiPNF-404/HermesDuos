@@ -48,10 +48,12 @@ local function on_ready()
 
 	import 'ready.lua'
 
+	import 'gods/zeus.lua'
 	import 'gods/hera.lua'
 	import 'gods/poseidon.lua'
 	import 'gods/demeter.lua'
 	import 'gods/apollo.lua'
+	import 'gods/aphrodite.lua'
 	import 'gods/hephaestus.lua'
 	import 'gods/hestia.lua'
 	import 'gods/ares.lua'

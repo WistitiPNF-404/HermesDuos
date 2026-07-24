@@ -1,6 +1,7 @@
 # Hermes Duos
 
 Hermes finally played the messenger and went ahead to cook new boons with the cooperation of his extended family; fresh new Duo boons are now available in his arsenal!
+For a better experience with the mod, please consider also installing [Wrath Of Olympus](https://thunderstore.io/c/hades-ii/p/Wistiti/WrathOfOlympus/)! 
 
 ## Installation
 Even though the mod has been tested thoroughly, consider backing up your save files from `%USERPROFILE%\Saved Games\Hades II\[ProfileName].sav`.
@@ -13,31 +14,31 @@ Even though the mod has been tested thoroughly, consider backing up your save fi
 
 ## Boon List
 
-### Spurned Patriarch (Zeus)
+### High Tension (Zeus)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/ZeusWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Wicked Offspring (Hera)
+### Royal Decree (Hera)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HeraWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Trident Squall (Poseidon)
+### Gilded Hook (Poseidon)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/PoseidonWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Hypothermic Shock (Demeter)
+### Hurricane Eye (Demeter)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/DemeterWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Critical Fiasco (Apollo)
+### Golden Prodigy (Apollo)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/ApolloWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Lustful Confession (Aphrodite)
+### Adoration Fee (Aphrodite)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/AphroditeWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Eruptive Plating (Hephaestus)
+### Sturdy Investment (Hephaestus)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HephaestusWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Cindered Ritual (Hestia)
+### Aerobic Capacity (Hestia)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/HestiaWrath_BoonPreview.png?raw=true" width="100%"/>
 
-### Ferocious Ichor (Ares)
+### Train Wreck (Ares)
 <img src="https://github.com/WistitiPNF-404/wrathofolympus/blob/main/imgs/AresWrath_BoonPreview.png?raw=true" width="100%"/>
 
 ## Contributors

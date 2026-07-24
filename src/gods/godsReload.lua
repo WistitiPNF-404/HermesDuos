@@ -1,32 +1,78 @@
 -- Hermes x Zeus
---[[function mod.OnZapDashStart( args )
-	local traitData = GetHeroTrait(gods.GetInternalBoonName("InstantDashBoon"))
+function mod.MagnetifyCrowd( hero, args, victim )
+	while true do
+		-- Finding the lightning rod
+		local nearbyTargetIds = GetClosestIds({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, IgnoreSelf = true, Distance = 2000 })
+		local eligibleEnemies = {}
+		for _, id in pairs(nearbyTargetIds) do
+			if ActiveEnemies[id] and not ActiveEnemies[id].IsDead and not ActiveEnemies[id].SkipModifiers then
+				table.insert(eligibleEnemies, ActiveEnemies[id])
+			end
+		end
+		if not IsEmpty(eligibleEnemies) and TableLength(eligibleEnemies) >= 1 then
+			if not MapState.CrowdZappingEnemy or MapState.CrowdZappingEnemy.IsDead then
+				if SessionMapState.ZapFieldPresentation then
+					StopAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
+					Destroy( MapState.AnchorId )
+				end
+				MapState.CrowdZappingEnemy = GetRandomValue(eligibleEnemies)
+				SessionMapState.ZapFieldPresentation = false
+			end
 
-	local effectName = "SpeedBoostEffect"
-	local dataProperties = ShallowCopyTable(EffectData[effectName].DataProperties )
-	dataProperties.Modifier = traitData.OnBlinkEndAction.FunctionArgs.SpeedMultiplier
-	dataProperties.Duration = traitData.OnBlinkEndAction.FunctionArgs.Duration
-	
-	local baseSpeed = GetBaseDataValue({ Type = "Unit", Name = "_PlayerUnit", Property = "Speed" })
-	local currentSpeed = GetUnitDataValue({ Id = CurrentRun.Hero.ObjectId, Property = "Speed" })
-	local targetSpeed = baseSpeed * traitData.OnBlinkEndAction.FunctionArgs.SpeedMultiplier
-	
-	SetUnitProperty({ DestinationId = CurrentRun.Hero.ObjectId, Property = "MaxSpeed", Value = targetSpeed })
+			if MapState.CrowdZappingEnemy ~= nil then
+				if not SessionMapState.ZapFieldPresentation then
+					local enemyLocation = GetLocation({Id = MapState.CrowdZappingEnemy.ObjectId })
+					local anchorId = SpawnObstacle({ Name = "InvisibleTarget", LocationX = enemyLocation.X, LocationY = enemyLocation.Y, ForceToValidLocation = true })
+					MapState.AnchorId = anchorId
+					Attach({ Id = anchorId, DestinationId = MapState.CrowdZappingEnemy.ObjectId })
+					CreateAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = anchorId, ScaleRadius = 350 })
+					SessionMapState.ZapFieldPresentation = true
+				end
+				thread( mod.ZapNearbyEnemies, MapState.CrowdZappingEnemy )
+			end
+		else
+			StopAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
+			DestroyOnDelay( MapState.AnchorId, 0.75)
+		end
+		wait(0.3, RoomThreadName)
+	end
+end
 
-	ApplyEffect({DestinationId = CurrentRun.Hero.ObjectId, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = dataProperties })
+function mod.ZapNearbyEnemies ( zapper )
+	-- Zapping time
+	local traitData = GetHeroTrait(gods.GetInternalBoonName("ZappyFieldBoon"))
+	local functionArgs = traitData.SetupFunction.Args 
+	local zapDistance = functionArgs.ZappingDistance
+	local nearbyZappableTargetIds = GetClosestIds({Id = zapper.ObjectId, DestinationName = "EnemyTeam", Distance = zapDistance, IgnoreInvulnerable = true, IgnoreHomingIneligible = true, IgnoreSelf = true})
+	local eligibleZappableEnemies = {}
+	for _, id in pairs(nearbyZappableTargetIds) do
+		if ActiveEnemies[id] and not ActiveEnemies[id].IsDead and not ActiveEnemies[id].SkipModifiers then
+			table.insert(eligibleZappableEnemies, ActiveEnemies[id])
+		end
+	end
 
-    --ApplyUnitPropertyChanges( CurrentRun.Hero, traitData.PropertyChanges, true)
-	local notifyName = _PLUGIN.guid .. "ZapDashWaiter"
-    game.NotifyOnControlReleased({
-        Names = { "Rush" },
-        Notify = notifyName,
-        Timeout = 0.5
-    })
-	waitUntil( notifyName )
-	--ApplyUnitPropertyChanges( CurrentRun.Hero, traitData.PropertyChanges, true, true)
-    SetUnitProperty({ DestinationId = CurrentRun.Hero.ObjectId, Property = "MaxSpeed", Value = currentSpeed })
-	modutil.mod.Hades.PrintOverhead(notifyName)
-end]]
+	local cooldown = functionArgs.Cooldown
+	if CheckCooldown( "ZappyFieldBoon", cooldown ) then
+		if not IsEmpty(eligibleZappableEnemies) and TableLength(eligibleZappableEnemies) >= 1 then
+			if not MapState.ZappableEnemy or MapState.ZappableEnemy.IsDead then
+				MapState.ZappableEnemy = GetRandomValue(eligibleZappableEnemies)
+			end
+
+			if zapper.ObjectId ~= nil then
+				if zapper.ObjectId or not zapper.ObjectId.IsDead then
+					CreateProjectileFromUnit({ 
+						Name = functionArgs.ProjectileName, 
+						Id = CurrentRun.Hero.ObjectId, 
+						DestinationId = zapper.ObjectId, 
+						FireFromTarget = true,
+						ProjectileCap = 5,
+						--DataProperties = addlProperties 
+					})
+				end
+			end
+		end
+	end	
+end
 
 -- Hermes x Hera
 function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
@@ -185,7 +231,6 @@ function mod.WeakToCharmChance ( victim, functionArgs, triggerArgs )
 	local nearbyTargetIds = GetClosestIds({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, IgnoreSelf = true, Distance = 2000 })
 	local charmedOFEnemies = {}
 	if triggerArgs.EffectName == "WeakEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then
-		--modutil.mod.Hades.PrintOverhead(functionArgs.CharmChance)
 		if RandomChance( functionArgs.CharmChance * GetTotalHeroTraitValue("LuckMultiplier", {IsMultiplier = true})) then
 			ApplyEffect({ 
 				Id = CurrentRun.Hero.ObjectId, 
@@ -205,29 +250,19 @@ function mod.WeakToCharmChance ( victim, functionArgs, triggerArgs )
 				table.insert(charmedOFEnemies, ActiveEnemies[id])
 			end
 		end
-		-- ok i'm lost from here, but i think i dont need this
-		--[[if not IsEmpty(charmedOFEnemies) then
-			if not MapState.OFCharmedEnemy or MapState.OFCharmedEnemy.IsDead then
-				MapState.OFCharmedEnemy = GetRandomValue(charmedOFEnemies)
-			end
-		end]]
 	end
-	thread(mod.CharmGiveMoney, triggerArgs )
 end
 
-function mod.CharmGiveMoney ( triggerArgs )
+function mod.CharmHitCheck ( traitArgs, attacker, victim, triggerArgs )
 	local victim = triggerArgs.Victim
 	local attacker = triggerArgs.AttackerTable
 	if victim == nil or attacker == nil then
 		return
 	end
-	if victim.Charmed then
-		if attacker ~= CurrentRun.Hero and attacker.ObjectId then -- this is where i want to check when a Charmed enemy hits another enemy
-			modutil.mod.Hades.PrintOverhead(attacker.ObjectId )
-			if IsCharmed({ Id = attacker.ObjectId }) then
-				local charmPaycheck = GetTotalHeroTraitValue( "ReportedGoldBonus" )
-				AddResource( "Money", round(charmPaycheck * GetTotalHeroTraitValue( "MoneyMultiplier", { IsMultiplier = true } )), "BonusCharmMoney" )
-			end
+	if attacker ~= CurrentRun.Hero then 
+		if IsCharmed({ Id = attacker.ObjectId }) then
+			local charmPaycheck = GetTotalHeroTraitValue( "ReportedGoldBonus" )
+			AddResource( "Money", round(charmPaycheck * GetTotalHeroTraitValue( "MoneyMultiplier", { IsMultiplier = true } )), "BonusCharmMoney" )
 		end
 	end
 end
