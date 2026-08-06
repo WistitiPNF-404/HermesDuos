@@ -27,8 +27,8 @@ gods.CreateBoon({
 			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Poseidon_44",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\PoseidonHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

@@ -15,33 +15,41 @@ gods.CreateBoon({
 	StatLines = { "ZapDamageStatDisplay1" },
     customStatLine = {
         Id = "ZapDamageStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Chain-lightning Damage:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Chain-Lightning Damage:",
+        description = "{#UpgradeFormat}{$TooltipData.ExtractData.ZapDamage}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
 			{ "ZeusWeaponBoon", "ZeusSpecialBoon", "ZeusCastBoon", "ZeusSprintBoon", "ZeusManaBoon" },
-			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
+			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_45",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\ZeusHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
 		{
+			Key = "ZapperDamage",
+			ExtractAs = "ZapDamage",
+			SkipAutoExtract = true,
+		},
+		{
 			External = true,
-			ExtractAs = "Damage",
 			BaseType = "ProjectileBase",
 			BaseName = "ProjectileZeusSpark",
-			BaseProperty = "Damage",
+			BaseProperty = "NumJumps",
+			Format = "TotalTargets",
+			ExtractAs = "Bounces",
+			SkipAutoExtract = true,
 		},
 	},
 
 	ExtraFields = 
 	{
+		ZapperDamage = 30, -- description only
 		SetupFunction =
 		{
 			Threaded = true,
@@ -53,7 +61,7 @@ gods.CreateBoon({
 				FirstHitOnly = true,
 				WindowCount = 3, -- "clip fire cooldown. no more than Count projectiles every Duration"
 				WindowDuration = 0.75,
-				ZappingDistance = 300,
+				ZappingDistance = 350,
 				Cooldown = 0.5,
 				ReportedValues = { 
 					ReportedMinimum = "Minimum",
@@ -91,8 +99,8 @@ gods.CreateBoon({
 			{ "HermesWeaponBoon", "HermesSpecialBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_44",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HeraHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -193,8 +201,8 @@ gods.CreateBoon({
 			{ "RoomRewardBonusBoon", "DoubleRewardBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Poseidon_44",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\PoseidonHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -246,8 +254,8 @@ gods.CreateBoon({
 			{ "HermesCastDiscountBoon", "SlowProjectileBoon", "DodgeChanceBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_41",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\DemeterHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -333,7 +341,8 @@ gods.CreateBoon({
 			{
 				ProjectileName = "DemeterOmegaStorm",
                 NumProjectiles = 2,
-				GustDamage = 10, --description only
+				ProjectileCap = 3,
+				GustDamage = 7, --description only
 				ReportValues = { 
 					ReportedGustDamage = "GustDamage",
 				},
@@ -355,7 +364,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Golden Prodigy",
-    description = "While you stand in your {$Keywords.CastSet}, restore some {!Icons.Health} of any damage you deal.",
+    description = "While in your {$Keywords.CastSet}, restore some {!Icons.Health} of any damage you deal with your {$Keywords.WeaponSet}.",
 	StatLines = { "LifeRestorationStatDisplay1" },
     customStatLine = {
         Id = "LifeRestorationStatDisplay1",
@@ -370,8 +379,8 @@ gods.CreateBoon({
 			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_41",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\ApolloHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -404,10 +413,10 @@ gods.CreateBoon({
 		},
         AddOutgoingLifestealModifiers =
 		{
+			ValidWeapons = WeaponSets.HeroPrimarySecondaryWeapons,
 			ValidMultiplier = 0.01,
 			MinLifesteal = 1,
 			RequiredEffect = "InsideCastBuff",
-			Unmultiplied = true,
 			ReportValues = 
 			{ 
 				ReportedLifeStealAmount = "ValidMultiplier",
@@ -441,11 +450,11 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "AphroditeCastBoon", "AphroditeSprintBoon", "AphroditeManaBoon" },
-			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
+			{ "DodgeChanceBoon", "MoneyMultiplierBoon", "RestockBoon", "LuckyBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_42",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\AphroHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -528,8 +537,8 @@ gods.CreateBoon({
 			{ "HeavyArmorBoon", "ArmorBoon", "EncounterStartDefenseBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_43",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HephHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -569,21 +578,26 @@ gods.CreateBoon({
     customStatLine = {
         Id = "FireballRushStatDisplay1",
         displayName = "{!Icons.Bullet}{#PropertyFormat}Fireball Blast Damage:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        description = "{#UpgradeFormat}{$TooltipData.ExtractData.FireballDamage}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
 			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
-			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
+			{ "SprintShieldBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_48",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HestiaHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
+		{
+			Key = "FireballSprintDamage",
+			ExtractAs = "FireballDamage",
+			SkipAutoExtract = true,
+		},
 		{
 			Key = "ReportedMultiplier",
 			ExtractAs = "Damage",
@@ -628,6 +642,7 @@ gods.CreateBoon({
 				ChangeType = "Absolute",
 			},
 		},
+		FireballSprintDamage = 80, -- for description only
 		OnWeaponFiredFunctions =
 		{
 			ValidWeapons =  {"WeaponSprint"},
@@ -635,7 +650,7 @@ gods.CreateBoon({
 			FunctionArgs =
 			{
 				ProjectileName = "ProjectileSprintFireball",
-				DamageMultiplier = 2.5,
+				DamageMultiplier = 1,
 				ReportValues = 
 				{
 					ReportedMultiplier = "DamageMultiplier",
@@ -682,11 +697,11 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "AresWeaponBoon", "AresSpecialBoon", "AresManaBoon", "BloodDropRevengeBoon" },
-			{ "SorcerySpeedBoon", "SlowProjectileBoon" },
+			{ "SprintShieldBoon", "SorcerySpeedBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_45",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\AresHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

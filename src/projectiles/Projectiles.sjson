@@ -12,14 +12,14 @@
         NumPenetrations = 9999
         Range = 375
         ArcStart = 0
-		ArcEnd = 450
+		ArcEnd = 750
 		ArcScaleY = 0.5
         Speed = 130
         UseStartLocation = true
         DamageRadius = 310
         DamageRadiusScaleY = 0.7
         DamageRadiusScaleX = 1.3
-        Damage = 10
+        Damage = 7
         ImpactVelocity = 0
         BlastSpeed = 2000
         ExpandBlastDuringDetonation = true
@@ -101,7 +101,7 @@
     {
 		Name = "ProjectileSprintFireball"
 		InheritFrom = "ProjectileFireball"
-		Damage = 100
+		Damage = 80
 	}
 ]
 }

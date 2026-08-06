@@ -27,8 +27,8 @@ gods.CreateBoon({
 			{ "HeavyArmorBoon", "ArmorBoon", "EncounterStartDefenseBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_43",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HephHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

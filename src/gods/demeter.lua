@@ -26,9 +26,9 @@ gods.CreateBoon({
 			{ "HermesCastDiscountBoon", "SlowProjectileBoon", "DodgeChanceBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_41",
-	--boonIconScale = 1.66,
-    
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\DemeterHermesDuo",
+	boonIconScale = 1.66,
+
 	ExtractValues =
 	{
 		{
@@ -113,7 +113,8 @@ gods.CreateBoon({
 			{
 				ProjectileName = "DemeterOmegaStorm",
                 NumProjectiles = 2,
-				GustDamage = 10, --description only
+                ProjectileCap = 3,
+				GustDamage = 7, --description only
 				ReportValues = { 
 					ReportedGustDamage = "GustDamage",
 				},

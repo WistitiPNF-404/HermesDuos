@@ -31,11 +31,11 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "AresWeaponBoon", "AresSpecialBoon", "AresManaBoon", "BloodDropRevengeBoon" },
-			{ "SorcerySpeedBoon", "SlowProjectileBoon" },
+			{ "SprintShieldBoon", "SorcerySpeedBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_45",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\AresHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

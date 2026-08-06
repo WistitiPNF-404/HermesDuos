@@ -15,33 +15,41 @@ gods.CreateBoon({
 	StatLines = { "ZapDamageStatDisplay1" },
     customStatLine = {
         Id = "ZapDamageStatDisplay1",
-        displayName = "{!Icons.Bullet}{#PropertyFormat}Chain-lightning Damage:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        displayName = "{!Icons.Bullet}{#PropertyFormat}Chain-Lightning Damage:",
+        description = "{#UpgradeFormat}{$TooltipData.ExtractData.ZapDamage}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
 			{ "ZeusWeaponBoon", "ZeusSpecialBoon", "ZeusCastBoon", "ZeusSprintBoon", "ZeusManaBoon" },
-			{ "MoneyMultiplierBoon", "TimedKillBuffBoon", "RestockBoon" },
+			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_45",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\ZeusHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
 		{
+			Key = "ZapperDamage",
+			ExtractAs = "ZapDamage",
+			SkipAutoExtract = true,
+		},
+		{
 			External = true,
-			ExtractAs = "Damage",
 			BaseType = "ProjectileBase",
 			BaseName = "ProjectileZeusSpark",
-			BaseProperty = "Damage",
+			BaseProperty = "NumJumps",
+			Format = "TotalTargets",
+			ExtractAs = "Bounces",
+			SkipAutoExtract = true,
 		},
 	},
 
 	ExtraFields = 
 	{
+		ZapperDamage = 30, -- description only
 		SetupFunction =
 		{
 			Threaded = true,
@@ -53,7 +61,7 @@ gods.CreateBoon({
 				FirstHitOnly = true,
 				WindowCount = 3, -- "clip fire cooldown. no more than Count projectiles every Duration"
 				WindowDuration = 0.75,
-				ZappingDistance = 300,
+				ZappingDistance = 350,
 				Cooldown = 0.5,
 				ReportedValues = { 
 					ReportedMinimum = "Minimum",

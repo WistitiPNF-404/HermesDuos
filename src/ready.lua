@@ -8,11 +8,6 @@
 --	values and functions later defined in `reload.lua`.
 
 -- These are some sample code snippets of what you can do with our modding framework:
-local file = rom.path.combine(rom.paths.Content, 'Game/Text/en/ShellText.en.sjson')
-sjson.hook(file, function(data)
-	return sjson_ShellText(data)
-end)
-
 modutil.mod.Path.Wrap("SetupMap", function(base, ...)
 	prefix_SetupMap()
 	return base(...)

@@ -11,7 +11,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Golden Prodigy",
-    description = "While you stand in your {$Keywords.CastSet}, restore some {!Icons.Health} of any damage you deal.",
+    description = "While in your {$Keywords.CastSet}, restore some {!Icons.Health} of any damage you deal with your {$Keywords.WeaponSet}.",
 	StatLines = { "LifeRestorationStatDisplay1" },
     customStatLine = {
         Id = "LifeRestorationStatDisplay1",
@@ -26,8 +26,8 @@ gods.CreateBoon({
 			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Zeus_41",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\ApolloHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
@@ -59,10 +59,10 @@ gods.CreateBoon({
 		},
         AddOutgoingLifestealModifiers =
 		{
+			ValidWeapons = WeaponSets.HeroPrimarySecondaryWeapons,
 			ValidMultiplier = 0.01,
 			MinLifesteal = 1,
 			RequiredEffect = "InsideCastBuff",
-			Unmultiplied = true,
 			ReportValues = 
 			{ 
 				ReportedLifeStealAmount = "ValidMultiplier",

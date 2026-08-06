@@ -26,8 +26,8 @@ gods.CreateBoon({
 			{ "HermesWeaponBoon", "HermesSpecialBoon", "TimedKillBuffBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_44",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HeraHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

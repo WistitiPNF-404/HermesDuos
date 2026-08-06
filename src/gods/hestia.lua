@@ -16,21 +16,26 @@ gods.CreateBoon({
     customStatLine = {
         Id = "FireballRushStatDisplay1",
         displayName = "{!Icons.Bullet}{#PropertyFormat}Fireball Blast Damage:",
-        description = "{#UpgradeFormat}{$TooltipData.StatDisplay1}",
+        description = "{#UpgradeFormat}{$TooltipData.ExtractData.FireballDamage}",
     },
 	requirements =
 	{
 		OneFromEachSet =
 		{
 			{ "CastProjectileBoon", "FireballManaSpecialBoon" },
-			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
+			{ "SprintShieldBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Ares_48",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\HestiaHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{
+		{
+			Key = "FireballSprintDamage",
+			ExtractAs = "FireballDamage",
+			SkipAutoExtract = true,
+		},
 		{
 			Key = "ReportedMultiplier",
 			ExtractAs = "Damage",
@@ -75,6 +80,7 @@ gods.CreateBoon({
 				ChangeType = "Absolute",
 			},
 		},
+		FireballSprintDamage = 80, -- for description only
 		OnWeaponFiredFunctions =
 		{
 			ValidWeapons =  {"WeaponSprint"},
@@ -82,7 +88,7 @@ gods.CreateBoon({
 			FunctionArgs =
 			{
 				ProjectileName = "ProjectileSprintFireball",
-				DamageMultiplier = 2.5,
+				DamageMultiplier = 1,
 				ReportValues = 
 				{
 					ReportedMultiplier = "DamageMultiplier",

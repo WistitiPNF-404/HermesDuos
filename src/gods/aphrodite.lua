@@ -23,11 +23,11 @@ gods.CreateBoon({
 		OneFromEachSet =
 		{
 			{ "AphroditeCastBoon", "AphroditeSprintBoon", "AphroditeManaBoon" },
-			{ "HermesWeaponBoon", "HermesSpecialBoon", "HermesCastDiscountBoon", "SorcerySpeedBoon" },
+			{ "DodgeChanceBoon", "MoneyMultiplierBoon", "RestockBoon", "LuckyBoon" },
 		},
 	},
-    boonIconPath = "GUI\\Screens\\BoonIcons\\Apollo_42",
-	--boonIconScale = 1.66,
+    boonIconPath = "Wistiti-HermesDuosBoonIcons\\AphroHermesDuo",
+	boonIconScale = 1.66,
     
 	ExtractValues =
 	{

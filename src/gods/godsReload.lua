@@ -52,12 +52,19 @@ function mod.ZapNearbyEnemies ( zapper )
 	end
 
 	local cooldown = functionArgs.Cooldown
+	local bonusDamageMultiplier = 0
+	local addlProperties = {}
+	if HeroHasTrait("ReboundingSparkBoon") then
+		addlProperties.AllowRepeatedOwnerJumpHit = true
+		addlProperties.AffectsSelf = true
+		--addlProperties.MultipleUnitCollisions = true
+	end
 	if CheckCooldown( "ZappyFieldBoon", cooldown ) then
 		if not IsEmpty(eligibleZappableEnemies) and TableLength(eligibleZappableEnemies) >= 1 then
 			if not MapState.ZappableEnemy or MapState.ZappableEnemy.IsDead then
 				MapState.ZappableEnemy = GetRandomValue(eligibleZappableEnemies)
 			end
-
+			addlProperties.NumJumps = GetBaseDataValue({ Type = "Projectile", Name = functionArgs.ProjectileName, Property = "NumJumps"}) + GetTotalHeroTraitValue("ZeusSparkBonusBounces")
 			if zapper.ObjectId ~= nil then
 				if zapper.ObjectId or not zapper.ObjectId.IsDead then
 					CreateProjectileFromUnit({ 
@@ -65,10 +72,17 @@ function mod.ZapNearbyEnemies ( zapper )
 						Id = CurrentRun.Hero.ObjectId, 
 						DestinationId = zapper.ObjectId, 
 						FireFromTarget = true,
+						DamageMultiplier = 3 + bonusDamageMultiplier, -- to change with boon description
 						ProjectileCap = 5,
-						--DataProperties = addlProperties 
+						DataProperties = addlProperties 
 					})
 				end
+			end
+		end
+		if functionArgs.EffectNames then
+		
+			for i, effectName in pairs( functionArgs.EffectNames ) do
+				ApplyEffect( { DestinationId = zapper.ObjectId, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = EffectData[effectName].EffectData, })
 			end
 		end
 	end	
@@ -189,12 +203,21 @@ end
 
 -- Hermes x Demeter
 function mod.CreateOmegaGusts (weaponData, functionArgs, triggerArgs)
+	if not MapState.OmegaStorms then
+		MapState.OmegaStorms = {}
+	end	
+	
 	local isExIndirectCast = false
 	if SessionMapState.ArmCast and weaponData.ArmedCastChargeStage then
 		isExIndirectCast = true
 	end
 	local targetId = SpawnObstacle({ Name = "InvisibleTarget", DestinationId = CurrentRun.Hero.ObjectId })
 	local angle = GetAngle({ Id = CurrentRun.Hero.ObjectId })
+	
+	if IsEmpty(MapState.AttachedOmegaStormProjectileIds) then
+		MapState.AttachedOmegaStormProjectileIds = {}
+	end
+
 	if IsExWeapon( weaponData.Name, {Combat = true}, triggerArgs ) or isExIndirectCast then
 		for i=1, functionArgs.NumProjectiles do
 			angle = i * ( 360 / functionArgs.NumProjectiles )
@@ -204,10 +227,17 @@ function mod.CreateOmegaGusts (weaponData, functionArgs, triggerArgs)
 				Id = CurrentRun.Hero.ObjectId, 
 				DamageMultiplier = functionArgs.DamageMultiplier,
 				Angle = angle
-			})
+			})				
+			table.insert(MapState.AttachedOmegaStormProjectileIds, projectileId)
 		end
-		thread( DestroyOnDelay, { targetId }, 3 )
-	end
+		
+		table.insert(MapState.OmegaStorms, ShallowCopyTable(MapState.AttachedOmegaStormProjectileIds) )
+		
+		if TableLength( MapState.OmegaStorms ) > functionArgs.ProjectileCap then
+			ExpireProjectiles({ ProjectileIds = MapState.OmegaStorms[1] })
+			table.remove( MapState.OmegaStorms, 1)
+		end
+	end 
 end
 
 -- Hermes x Apollo
