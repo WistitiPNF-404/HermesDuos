@@ -70,6 +70,13 @@ sjson.hook(playerProjectilesFile, function(data)
 	mod.readSjson(projectileFile, data, "Projectiles")
 end)
 
+--Animations
+local generalEnemyAnimationsFile = rom.path.combine(rom.paths.Content,"Game\\Animations\\Enemy_General_VFX.sjson")
+sjson.hook(generalEnemyAnimationsFile, function(data)
+	local AnimationFile = rom.path.combine(rom.paths.plugins(), _PLUGIN.guid .. "\\animations\\Animations.sjson")
+	mod.readSjson(AnimationFile, data, "Animations")
+end)
+
 --Adding valid projectiles to existing boons
 --Demeter x Hermes
 table.insert(game.TraitData["StormSpawnBoon"].SetupFunction.Args.TargetProjectileNames, "DemeterOmegaStorm")

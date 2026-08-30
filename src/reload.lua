@@ -22,6 +22,6 @@ end
 -------------------------------------------------------------------
 function mod.LoadBoonIconsPackage()
 	local packageName = _PLUGIN.guid .. "BoonIcons"
-	print("Wistiti-HermesDuos - Loading package: " .. packageName)
+	--print("Wistiti-HermesDuos - Loading package: " .. packageName)
 	LoadPackages({ Name = packageName })
 end

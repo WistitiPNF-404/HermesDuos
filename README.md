@@ -48,4 +48,4 @@ Even though the mod has been tested thoroughly, consider backing up your save fi
 - Everyone who helped me through the [Hades modding Discord server](https://discord.gg/KuMbyrN)
 
 ## Issues and Feedback
-Please send any bugs or feedback through [Github](https://github.com/WistitiPNF-404/wrathofolympus/issues) or by sending me a DM on Discord (Wistiti)
+Please send any bugs or feedback through [Github](https://github.com/WistitiPNF-404/HermesDuos/issues) or by sending me a DM on Discord (Wistiti)

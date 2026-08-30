@@ -71,10 +71,39 @@ gods.CreateBoon({
 					LegacyChillEffect = { "DemeterSprintBoon", "CastNovaBoon", "StormSpawnBoon" },
 					AmplifyKnockbackEffect = { "PoseidonStatusBoon", "PoseidonCastBoon" },
 					WeakEffect = LinkedTraitData.AphroditeWeakTraits,
-					DamageShareEffect = LinkedTraitData.HeraLinkTraits,
 					BlindEffect = LinkedTraitData.ApolloBlindTraits,
 					DelayedKnockbackEffect = { "MassiveKnockupBoon" },
+					AresStatus = LinkedTraitData.AresRendTraits,
 				},
+				ConditionalOutgoingDamageMultipliers = 
+				{
+					{
+						EffectName = "AresStatus",
+						OutgoingDamageModifiers = 
+						{
+							ValidProjectilesLookup = { 
+								"HeraCastDamageProjectile",
+								"HeraSprintProjectile",
+							},
+							MissingEffectDamage = EffectData.AresStatus.BonusBaseDamageOnInflict,
+							MissingEffectName = "AresStatus",
+							MissingDamagePresentation = 
+							{
+								TextStartColor = Color.AresDamageLight,
+								TextColor = Color.AresDamage,
+								FunctionName = "AresRendApplyPresentation",
+								HitSimSlowParametersFalseTraitName = "StaffRaiseDeadAspect",
+								SimSlowDistanceThreshold = 180,
+								HitSimSlowCooldown = 0.8,
+								HitSimSlowParameters =
+								{
+									{ ScreenPreWait = 0.02, Fraction = 0.13, LerpTime = 0 },
+									{ ScreenPreWait = 0.10, Fraction = 1.0, LerpTime = 0.05 },
+								},
+							},
+						}
+					}
+				}
 			},
 		},
 		OnEffectApplyFunction = 
@@ -90,9 +119,9 @@ gods.CreateBoon({
 					LegacyChillEffect = true,
 					AmplifyKnockbackEffect = true,
 					WeakEffect = "ApplyAphroditeVulnerability",
-					DamageShareEffect = "ApplyDamageShare",
 					BlindEffect = true,
 					DelayedKnockbackEffect = true,
+					-- AresStatus = true,
 				},
 			},
 		},

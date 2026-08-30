@@ -11,7 +11,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "High Tension",
-    description = "A {$Keywords.ModsWistitiMagnetic} is applied to {#BoldFormatGraft}1 {#Prev} foe in an {$Keywords.EncounterAlt} at all times.",
+    description = "Automatically apply a {$Keywords.ModsWistitiMagnetic} on {#BoldFormatGraft}1 {#Prev} foe in an {$Keywords.EncounterAlt} at all times.",
 	StatLines = { "ZapDamageStatDisplay1" },
     customStatLine = {
         Id = "ZapDamageStatDisplay1",
@@ -56,7 +56,7 @@ gods.CreateBoon({
 			Name = _PLUGIN.guid .. "." .. "MagnetifyCrowd",
 			Args = 
 			{
-				Mininum = 1,
+				Mininum = 2,
 				ProjectileName = "ProjectileZeusSpark",
 				FirstHitOnly = true,
 				WindowCount = 3, -- "clip fire cooldown. no more than Count projectiles every Duration"

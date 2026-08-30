@@ -1,6 +1,28 @@
 # Changelog
 
-## [1.0.0] - 2026-08-XX
+## [1.0.4] - 2026-08-XX
+
+- Balancing
+    - Sturdy Investment (Hephaestus x Hermes): Increased Gold cost per Armor Point (5 -> 10)
+    - Sturdy Investment (Hephaestus x Hermes): Decreased number of requirements to facilitate the offering of the Boon
+    - Sturdy Investment (Hephaestus x Hermes): Changed the requirements on Hermes' side
+- Bug fix:
+    - High Tension (Zeus x Hermes): Fixed an issue where the Magnetic Field's visual circle would disappear for the rest of an encounter when set on enemies that used teleport abilities (e.g.: Chronos)
+- Misc
+    - High Tension (Zeus x Hermes): Reduced the opacity of the interior of the circle's VFX
+
+## [1.0.3] - 2026-08-14
+
+- Bug fix:
+    - Royal Decree (Hera x Hermes): Fixed an issue where Wounds would not be applied when inflicting Hitch
+        - Side note: The bonus damage will not apply when inflicting Wounds through Hitch. Still figuring out a solution to fix this issue
+
+## [1.0.2] - 2026-08-10
+
+- Misc
+    - Adoration Fee (Aphrodite x Hermes): Changed phrasing to include that foes are temporarily Charmed (unchanged, was always 8 seconds)
+
+## [1.0.0] - 2026-08-05
 
 - Official release!
 - (NEW!) Boon icons for each Hermes Duo Boons

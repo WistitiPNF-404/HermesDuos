@@ -11,7 +11,7 @@ gods.CreateBoon({
 	reuseBaseIcons = true,
 
     displayName = "Adoration Fee",
-    description = "Inflicting {$Keywords.Weak} on foes may {$Keywords.Charm} them, and any foes they strike gains you {#MoneyFormatBold}+5 {#Prev}{!Icons.Currency}.",
+    description = "Inflicting {$Keywords.Weak} on foes may temporarily {$Keywords.Charm} them, and their strikes gain you {#MoneyFormatBold}+5 {#Prev}{!Icons.Currency}.",
 	StatLines = { "CharmChanceStatDisplay1" },
     customStatLine = {
         Id = "CharmChanceStatDisplay1",

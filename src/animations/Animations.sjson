@@ -1,0 +1,28 @@
+{ Animations = [ 
+    {
+		Name = "MagneticFieldVfx"
+		CreateAnimation = "TheseusGodPowerPreviewDecal"
+		FilePath = "Fx\TheseusGodPowerPreviewDecal\TheseusGodPowerPreviewDecalDark"
+		GroupName = "FX_Terrain"
+
+		AngleFromOwner = "Ignore"
+		ColorFromOwner = "Ignore"
+		EndAlpha = 0.2
+		EaseOut = 1.0
+		EndFrame = 1
+		HoldLastFrame = true
+		NumFrames = 1
+		RandomDurationMax = 0.15
+		RandomDurationMin = 0.06
+		StartFrame = 1
+		RandomFlipHorizontal = true
+		DieWithOwner = true
+		RandomRotation = true
+		PostRotateScaleY = 0.5
+		ScaleFromOwner = "Ignore"
+		ScaleRadius = 350
+		StartScale = 0.9
+        Color = { Red = 1.0 Green = 1.0 Blue = 0.4 }
+	}
+]
+}

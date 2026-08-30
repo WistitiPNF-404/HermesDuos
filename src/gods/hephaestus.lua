@@ -22,9 +22,8 @@ gods.CreateBoon({
 	{
 		OneFromEachSet =
 		{
-			{ "HephaestusWeaponBoon", "HephaestusSpecialBoon", "HephaestusCastBoon", "HephaestusSprintBoon", "HephaestusManaBoon" },
-			{ "HermesCastDiscountBoon", "SorcerySpeedBoon", "SlowProjectileBoon" },
 			{ "HeavyArmorBoon", "ArmorBoon", "EncounterStartDefenseBuffBoon" },
+			{ "SlowProjectileBoon", "MoneyMultiplierBoon", "RestockBoon" },
 		},
 	},
     boonIconPath = "Wistiti-HermesDuosBoonIcons\\HephHermesDuo",
@@ -43,7 +42,7 @@ gods.CreateBoon({
 	{
 		GoldtoArmorData = 
 		{
-			GoldCost = 5,
+			GoldCost = 10,
 			ArmorGain = 1,
 			ReportValues = { ReportedMultiplier = "GoldCost" },
 		},

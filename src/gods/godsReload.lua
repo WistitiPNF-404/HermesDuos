@@ -12,7 +12,7 @@ function mod.MagnetifyCrowd( hero, args, victim )
 		if not IsEmpty(eligibleEnemies) and TableLength(eligibleEnemies) >= 1 then
 			if not MapState.CrowdZappingEnemy or MapState.CrowdZappingEnemy.IsDead then
 				if SessionMapState.ZapFieldPresentation then
-					StopAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
+					StopAnimation({ Name = "MagneticFieldVfx", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
 					Destroy( MapState.AnchorId )
 				end
 				MapState.CrowdZappingEnemy = GetRandomValue(eligibleEnemies)
@@ -25,14 +25,18 @@ function mod.MagnetifyCrowd( hero, args, victim )
 					local anchorId = SpawnObstacle({ Name = "InvisibleTarget", LocationX = enemyLocation.X, LocationY = enemyLocation.Y, ForceToValidLocation = true })
 					MapState.AnchorId = anchorId
 					Attach({ Id = anchorId, DestinationId = MapState.CrowdZappingEnemy.ObjectId })
-					CreateAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = anchorId, ScaleRadius = 350 })
+					CreateAnimation({ Name = "MagneticFieldVfx", DestinationId = anchorId, ScaleRadius = 350 })
 					SessionMapState.ZapFieldPresentation = true
 				end
 				thread( mod.ZapNearbyEnemies, MapState.CrowdZappingEnemy )
 			end
 		else
-			StopAnimation({ Name = "TheseusGodPowerPreviewDecal_Zeus", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
-			DestroyOnDelay( MapState.AnchorId, 0.75)
+			wait(0.3, RoomThreadName)
+			if IsEmpty(eligibleEnemies) and TableLength(eligibleEnemies) <= 1 then
+				StopAnimation({ Name = "MagneticFieldVfx", DestinationId = MapState.AnchorId, IncludeCreatedAnimations = true })
+				DestroyOnDelay( MapState.AnchorId, 0.75)
+				SessionMapState.ZapFieldPresentation = false
+			end
 		end
 		wait(0.3, RoomThreadName)
 	end
@@ -90,7 +94,7 @@ end
 
 -- Hermes x Hera
 function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
-	if triggerArgs.EffectName == "DamageShareEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then 
+	if triggerArgs.EffectName == "DamageShareEffect" and not triggerArgs.Reapplied or not victim or victim.IsDead then 
 		local activeCurses = DeepCopyTable( SessionMapState.ValidEffects )
 		for i, enemy in pairs( ShallowCopyTable( ActiveEnemies ) ) do
 			if enemy ~= victim and not enemy.SkipModifiers and enemy.ActiveEffects then
@@ -307,7 +311,7 @@ modutil.mod.Path.Wrap("SpendResource", function (baseFunc, name, amount, source,
 		if currentMoney >= moneyCost then
 			local oldGoldToArmorSource = MapState.HealthBufferSources[ "GoldToArmorSource" ] or 0
 			armorGained = amount / moneyCost
-			AddArmor( oldGoldToArmorSource + armorGained, { Silent = true } )
+			AddArmor( oldGoldToArmorSource + armorGained )
 			CurrentRun.HasMoneyForArmor = true
 		else
 			if CurrentRun.HasMoneyForArmor then
