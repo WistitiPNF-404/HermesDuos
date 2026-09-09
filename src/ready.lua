@@ -53,12 +53,73 @@ mod.HermesDuoBoonProphecy_Quest = sjson.to_object({
 	Description = "The daughter of the god of the dead shall someday earn a variety of Duo Boons offered by the the God of Swiftness with his fellow Olympians.",
 }, Order)
 
+-- Corrupted Monarchy
+mod.HeraDuo_Rarify01 = sjson.to_object({
+	Id = "RarifyUseLootAndConsume",
+    DisplayName = "{I} Accept\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify02 = sjson.to_object({
+	Id = "RarifyUseLootGiftAndConsume",
+    DisplayName = "{I} Accept\n {G} Gift\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify03 = sjson.to_object({
+	Id = "UseConvertOrRarifyResourcePickup",
+    DisplayName = "{I} Gain {#UseLockKeyFormat}+{$TempTextData.ResourceAmount}{!TempTextData.ResourceIconPath}\n {G} Transform {#StatFormat}{$TempTextData.ConvertAmount}/{$TempTextData.ConvertMaxAmount}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify04 = sjson.to_object({
+	Id = "UseConvertOrRarifyResourcePickupRunProgress",
+    DisplayName = "{I} Gain {#UseLockKeyFormat}+{$TempTextData.ResourceAmount}{!TempTextData.ResourceIconPath} +{$TempTextData.RunProgressResourceAmount}{!TempTextData.RunProgressResourceIconPath}\n {G} Transform {#StatFormat}{$TempTextData.ConvertAmount}/{$TempTextData.ConvertMaxAmount}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify05 = sjson.to_object({
+	Id = "UseConvertOrRarifyGiftPointDrop",
+    DisplayName = "{I} Gain {#UseGiftPointFormat}+{$TempTextData.AddResources.GiftPoints}{!Icons.GiftPoints}\n {G} Transform {#StatFormat}\\[{$TempTextData.ConvertAmount}/{$TempTextData.ConvertMaxAmount}\\]\n {SI} Purge Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify06 = sjson.to_object({
+	Id = "UseConvertOrRarifyGiftPointDropRunProgress",
+    DisplayName = "{I} Gain {#UseGiftPointFormat}+{$TempTextData.AddResources.GiftPoints}{!Icons.GiftPoints} +1{!Icons.RandomPom}\n {G} Transform {#StatFormat}\\[{$TempTextData.ConvertAmount}/{$TempTextData.ConvertMaxAmount}\\]\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify07 = sjson.to_object({
+	Id = "UseOrRarifyGiftPointDrop",
+    DisplayName = "{I} Gain {#UseGiftPointFormat}+{$TempTextData.AddResources.GiftPoints}{!Icons.GiftPoints}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify08 = sjson.to_object({
+	Id = "UseOrRarifyGiftPointDropRunProgress",
+    DisplayName = "{I} Gain {#UseGiftPointFormat}+{$TempTextData.AddResources.GiftPoints}{!Icons.GiftPoints} +1{!Icons.RandomPom}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify09 = sjson.to_object({
+	Id = "UseOrRarifyResourcePickup",
+    DisplayName = "{I} Gain {#UseLockKeyFormat}+{$TempTextData.ResourceAmount}{!TempTextData.ResourceIconPath}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
+mod.HeraDuo_Rarify10 = sjson.to_object({
+	Id = "UseOrRarifyResourcePickupRunProgress",
+    DisplayName = "{I} Gain {#UseLockKeyFormat}+{$TempTextData.ResourceAmount}{!TempTextData.ResourceIconPath} +{$TempTextData.RunProgressResourceAmount}{!TempTextData.RunProgressResourceIconPath}\n {SI} Purge {#ManaFormat}(+1 Rarity Level)"
+}, Order)
+
 sjson.hook(HelpTextFile, function(data)
 	table.insert(data.Texts, mod.GustPlural)
 	table.insert(data.Texts, mod.ExecuteStatus)
 	table.insert(data.Texts, mod.MagneticField)
 	table.insert(data.Texts, mod.AresTrainBoon_CombatText)
 	table.insert(data.Texts, mod.HermesDuoBoonProphecy_Quest)
+	table.insert(data.Texts, mod.HeraDuo_Rarify01)
+	table.insert(data.Texts, mod.HeraDuo_Rarify02)
+	table.insert(data.Texts, mod.HeraDuo_Rarify03)
+	table.insert(data.Texts, mod.HeraDuo_Rarify04)
+	table.insert(data.Texts, mod.HeraDuo_Rarify05)
+	table.insert(data.Texts, mod.HeraDuo_Rarify06)
+	table.insert(data.Texts, mod.HeraDuo_Rarify07)
+	table.insert(data.Texts, mod.HeraDuo_Rarify08)
+	table.insert(data.Texts, mod.HeraDuo_Rarify09)
+	table.insert(data.Texts, mod.HeraDuo_Rarify10)
 end)
 
 ResetKeywords()

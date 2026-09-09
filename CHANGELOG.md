@@ -1,6 +1,18 @@
 # Changelog
 
-## [1.0.4] - 2026-08-XX
+## [1.1.0] - 2026-09-08
+
+- Balancing
+    - Royal Decree (Hera x Hermes): cut from the mod; replaced with...
+    - (NEW!) Sacrosanct Alms (Hera x Hermes): You can purge most rewards, and when you do, a random Boon you have gains Rarity.
+        - Side note: Purging a reward with the Time Piece (Chronos) keepsake also rarifies a Boon when the Duo is equipped, so try it out!
+    - Hurricane Eye (Demeter x Hermes): Decreased Gusts damage (7 -> 5)
+    - Adoration Fee (Aphrodite x Hermes): Guardians and some Wardens are now unabled to be Charmed to avoid any visual issues
+    - Sturdy Investment (Hephaestus x Hermes): Decreased cost per Armor Point (10 -> 5)
+- Misc
+    - Sturdy Investment (Hephaestus x Hermes): Now displays above Melinoe a small pop-up of the total amount of Armor gained when Gold decreases
+
+## [1.0.4] - 2026-09-01
 
 - Balancing
     - Sturdy Investment (Hephaestus x Hermes): Increased Gold cost per Armor Point (5 -> 10)

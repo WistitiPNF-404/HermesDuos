@@ -19,7 +19,7 @@
         DamageRadius = 310
         DamageRadiusScaleY = 0.7
         DamageRadiusScaleX = 1.3
-        Damage = 7
+        Damage = 5
         ImpactVelocity = 0
         BlastSpeed = 2000
         ExpandBlastDuringDetonation = true

@@ -93,55 +93,166 @@ function mod.ZapNearbyEnemies ( zapper )
 end
 
 -- Hermes x Hera
-function mod.HitchCopyStatus( victim, functionArgs, triggerArgs )
-	if triggerArgs.EffectName == "DamageShareEffect" and not triggerArgs.Reapplied or not victim or victim.IsDead then 
-		local activeCurses = DeepCopyTable( SessionMapState.ValidEffects )
-		for i, enemy in pairs( ShallowCopyTable( ActiveEnemies ) ) do
-			if enemy ~= victim and not enemy.SkipModifiers and enemy.ActiveEffects then
-				for effectName, effectStacks in pairs(enemy.ActiveEffects) do
-					if functionArgs.ValidStatusNames[effectName] and activeCurses[effectName] then
-						if effectName == "BurnEffect" then
-							if not activeCurses[effectName].NumStacks or activeCurses[effectName].NumStacks < effectStacks then
-								activeCurses[effectName].NumStacks = effectStacks
-							end
-						end
-						if effectName == "DamageShareEffect" then
-							if not activeCurses[effectName].Amount or activeCurses[effectName].Amount < enemy.DamageShareAmount then
-								activeCurses[effectName].Amount = enemy.DamageShareAmount
-							end
-						end
-						if effectName == "DamageEchoEffect" then
-							if enemy.ActiveEchoes and enemy.ActiveEchoes[effectName] and enemy.ActiveEchoes[effectName].Payoff and 
-								( not activeCurses[effectName].Modifier or activeCurses[effectName].Modifier < enemy.ActiveEchoes[effectName].Payoff ) then
-								activeCurses[effectName].Modifier = enemy.ActiveEchoes[effectName].Payoff
-							end
-						end
-						
-						if effectName == "DelayedKnockbackEffect" then
-							activeCurses[effectName].TriggerDamage = enemy.TriggerDamage 
-						end
-					end
-				end
-			end
-		end
+function mod.CanRarifyReward( reward )
+	if not reward then
+		return false
+	end
+	if reward.ResourceCosts ~= nil and HasResourceCost( reward.ResourceCosts ) then
+		return false
+	end
+	return reward.GoldConversionEligible
+end
 
-		for effectName, effectData in pairs( activeCurses ) do
-			if effectName ~= "DamageShareEffect" then
-				if type(functionArgs.ValidStatusNames[effectName]) == "string" then
-					thread( _G[functionArgs.ValidStatusNames[effectName]], victim, { EffectName = effectName, EffectArgs = { Modifier = effectData.Modifier, Amount = effectData.Amount }, NumStacks = effectData.NumStacks }, {})
-				else
-					local dataProperties = {}
-					if EffectData[effectName].EffectData then
-						dataProperties = MergeTables( EffectData[effectName].EffectData, effectData )
-					elseif EffectData[effectName].DataProperties then
-						dataProperties = MergeTables( EffectData[effectName].DataProperties, effectData )
-					end
-					ApplyEffect( { DestinationId = victim.ObjectId, Id = CurrentRun.Hero.ObjectId, EffectName = effectName, DataProperties = dataProperties })	
-				end			
-			end
+modutil.mod.Path.Wrap("CanSpecialInteract", function(baseFunc, source )
+	if source.ResourceCosts ~= nil and HasResourceCost( source.ResourceCosts ) then
+		return false
+	end
+	if HeroHasTrait(gods.GetInternalBoonName("PurgeRarifyBoon")) and mod.CanRarifyReward( source ) and (mod.HasUpgradableTrait ( { NumTraits = 1, MaxRarity = 3, StackEligibleOnly = true, Silent = true } )) then
+		contextArgs = contextArgs or {}
+		return true
+	else
+		return baseFunc( source )
+	end
+	
+end)
+
+function mod.HasUpgradableTrait (args)
+	for i, traitData in ipairs( CurrentRun.Hero.Traits ) do
+		if IsGodTrait(traitData.Name, { ForShop = true }) 
+			and TraitData[traitData.Name] and not traitData.BlockInRunRarify and traitData.Rarity ~= nil 
+			and ( ( GetUpgradedRarity(traitData.Rarity) ~= nil and traitData.RarityLevels[GetUpgradedRarity(traitData.Rarity)] ~= nil ) or ( args.TargetRarity ~= nil and traitData.RarityLevels[GetRarityKey(args.TargetRarity)] ~= nil ) )
+			and ( args.MaxRarity == nil or GetRarityValue( traitData.Rarity ) <= args.MaxRarity )
+			--and ( args.StackEligibleOnly == nil or (IsGodTrait(traitData.Name) and not traitData.BlockStacking)) 
+			and ( ( traitData.Name ~= "HephaestusWeaponBoon" and traitData.Name ~= "HephaestusSpecialBoon" and traitData.Name ~= "HephaestusSprintBoon" ) or ( traitData.ExtractData and traitData.ExtractData.UnmodifiedCooldown and traitData.ExtractData.UnmodifiedCooldown > 2 ))
+			then
+			return true
 		end
 	end
+	return false
 end
+
+modutil.mod.Path.Wrap("ShowUseButton", function(baseFunc, objectId, useTarget )
+	if (mod.CanRarifyReward( useTarget )) then
+		
+		if HeroHasTrait(gods.GetInternalBoonName("PurgeRarifyBoon")) and not (CanGoldifyReward(useTarget) and HeroHasTrait("GoldifyKeepsake")) then
+			useTarget = ShallowCopyTable(useTarget)
+			local maxUses = 0
+			if HeroHasTrait("MetaToRunMetaUpgrade") then
+				maxUses = GetHeroTrait("MetaToRunMetaUpgrade").RarityMultiplier
+			end
+
+			if useTarget.UseTextTalkAndSpecial == "UseOrGoldifyGiftPointDrop" then
+				useTarget.UseTextTalkAndSpecial = "UseOrRarifyGiftPointDrop"
+			elseif useTarget.UseTextTalkAndSpecial == "UseOrGoldifyGiftPointDropRunProgress" then
+				useTarget.UseTextTalkAndSpecial = "UseOrRarifyGiftPointDropRunProgress"
+			elseif useTarget.UseTextTalkAndSpecial == "UseOrGoldifyResourcePickup" then
+				useTarget.UseTextTalkAndSpecial = "UseOrRarifyResourcePickup"
+			elseif useTarget.UseTextTalkAndSpecial == "UseOrGoldifyResourcePickupRunProgress" then
+				useTarget.UseTextTalkAndSpecial = "UseOrRarifyResourcePickupRunProgress"
+			else
+				useTarget.UseTextTalkAndSpecial = "RarifyUseLootAndConsume"
+				useTarget.UseTextTalkGiftAndSpecial = "RarifyUseLootGiftAndConsume"
+			end
+			
+			if useTarget.UseTextTalkGiftAndSpecial == "UseConvertOrGoldifyResourcePickup" then
+				useTarget.UseTextTalkGiftAndSpecial = "UseConvertOrRarifyResourcePickup"
+			elseif useTarget.UseTextTalkGiftAndSpecial == "UseConvertOrGoldifyGiftPointDrop" then
+				useTarget.UseTextTalkGiftAndSpecial = "UseConvertOrRarifyGiftPointDrop"
+			elseif useTarget.UseTextTalkGiftAndSpecial == "UseConvertOrGoldifyResourcePickupRunProgress" then
+				useTarget.UseTextTalkGiftAndSpecial = "UseConvertOrRarifyResourcePickupRunProgress"
+			elseif useTarget.UseTextTalkGiftAndSpecial == "UseConvertOrGoldifyGiftPointDropRunProgress" then
+				useTarget.UseTextTalkGiftAndSpecial = "UseConvertOrRarifyGiftPointDropRunProgress"
+			else
+				useTarget.UseTextTalkAndSpecial = "RarifyUseLootAndConsume"
+				useTarget.UseTextTalkGiftAndSpecial = "RarifyUseLootGiftAndConsume"
+			end
+			
+			if useTarget.ReplaceSpecialForGoldify then
+				useTarget.UseTextTalkAndSpecial = "RarifyUseLootAndConsume"
+				useTarget.UseTextTalkGiftAndSpecial = "RarifyUseLootGiftAndConsume"	
+			end
+			useTarget.ConvertAmount = GetTotalHeroTraitValue( "MetaConversionUses" )
+			useTarget.ConvertMaxAmount = maxUses
+		end
+	end
+	return baseFunc( objectId, useTarget )
+end)
+
+game.OnControlPressed({ "SpecialInteract", function(triggerArgs)
+	if not IsEmpty( ActiveScreens ) then
+		return
+	end
+
+	local target = triggerArgs.UseTarget
+	if target ~= nil and CanSpecialInteract( target ) then
+		if mod.CanRarifyReward( target ) then
+			target.GoldConversionEligible = false
+			local previouslyRequired = false
+			if MapState.RoomRequiredObjects[target.ObjectId] then
+				MapState.RoomRequiredObjects[target.ObjectId] = nil
+				previouslyRequired = true
+			end
+			thread( HideUseButton, target.ObjectId, target )
+			if CurrentRun.CurrentRoom.Encounter ~= nil and CurrentRun.CurrentRoom.Encounter.RewardsToRestore ~= nil then
+				CurrentRun.CurrentRoom.Encounter.RewardsToRestore[target.ObjectId] = nil
+			end
+				
+			local longerPlayerInputBlock = false
+			if CurrentRun.CurrentRoom.Encounter ~= nil and CurrentRun.CurrentRoom.Encounter.EncounterType == "Devotion" and not CurrentRun.CurrentRoom.Encounter.StartTime then
+				longerPlayerInputBlock = true
+			end
+
+			if longerPlayerInputBlock then
+				AddInputBlock({ Name = "AdditionalGoldifyPresentationLockout"})
+			end
+			GoldifyPresentation( target )
+			
+			thread(mod.RandomRarify, args, origTraitData, contextArgs )
+			Destroy({ Id = target.ObjectId })
+
+			if target.MenuNotify then
+				NotifyResultsTable[ target.MenuNotify ] = target.Name
+				notifyExistingWaiters( target.MenuNotify )
+			end
+			if target.NotifyName then
+				notifyExistingWaiters( target.NotifyName )
+			end
+			wait( 0.2 )
+			
+			if longerPlayerInputBlock then
+				RemoveInputBlock({ Name = "AdditionalGoldifyPresentationLockout"})
+			end
+
+			if CheckRoomExitsReady( CurrentRun.CurrentRoom ) then
+				UnlockRoomExits( CurrentRun, CurrentRun.CurrentRoom )
+			end
+		else
+			GameState.SpecialInteractRecord[target.Name] = (GameState.SpecialInteractRecord[target.Name] or 0) + 1
+			CurrentRun.SpecialInteractRecord[target.Name] = (CurrentRun.SpecialInteractRecord[target.Name] or 0) + 1
+			TriggerCooldown( target.Name..target.ObjectId )
+			CallFunctionName( target.SpecialInteractFunctionName, target )
+		end
+	end
+end })
+
+function mod.RandomRarify ( args, origTraitData, contextArgs )
+	contextArgs = contextArgs or {}
+	local traitData = AddRarityToTraits( origTraitData, { NumTraits = 1, MaxRarity = 3, StackEligibleOnly = true, Silent = true } )
+	if not traitData then
+		traitData = AddRarityToTraits( origTraitData, { NumTraits = 1 } )
+	end
+	
+	thread( HeraTraitRarityPresentation, traitData.Name, contextArgs.Delay )
+end
+
+modutil.mod.Path.Wrap("GushMoney", function(baseFunc, args )
+	baseFunc( args )
+	if HeroHasTrait("GoldifyKeepsake") and HeroHasTrait(gods.GetInternalBoonName("PurgeRarifyBoon")) and (args.Source == "DebugSpawnMoney") then
+		if mod.HasUpgradableTrait ( { NumTraits = 1, MaxRarity = 3, StackEligibleOnly = true, Silent = true } ) then
+			mod.RandomRarify ( args, origTraitData, contextArgs )
+		end
+	end
+end)
 
 -- Hermes x Poseidon
 modutil.mod.Path.Wrap("CalculateDamageMultipliers", function(baseFunc, attacker, victim, weaponData, triggerArgs )
@@ -264,6 +375,9 @@ end
 function mod.WeakToCharmChance ( victim, functionArgs, triggerArgs )
 	local nearbyTargetIds = GetClosestIds({ Id = CurrentRun.Hero.ObjectId, DestinationName = "EnemyTeam", IgnoreInvulnerable = true, IgnoreHomingIneligible = true, IgnoreSelf = true, Distance = 2000 })
 	local charmedOFEnemies = {}
+	if victim.IsBoss or victim.UseBossHealthBar then
+		return
+	end
 	if triggerArgs.EffectName == "WeakEffect" and not triggerArgs.Reapplied and victim.ActivationFinished then
 		if RandomChance( functionArgs.CharmChance * GetTotalHeroTraitValue("LuckMultiplier", {IsMultiplier = true})) then
 			ApplyEffect({ 
@@ -311,6 +425,7 @@ modutil.mod.Path.Wrap("SpendResource", function (baseFunc, name, amount, source,
 		if currentMoney >= moneyCost then
 			local oldGoldToArmorSource = MapState.HealthBufferSources[ "GoldToArmorSource" ] or 0
 			armorGained = amount / moneyCost
+			armorGained = round( armorGained )
 			AddArmor( oldGoldToArmorSource + armorGained )
 			CurrentRun.HasMoneyForArmor = true
 		else

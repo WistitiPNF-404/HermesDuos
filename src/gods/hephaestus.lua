@@ -42,7 +42,7 @@ gods.CreateBoon({
 	{
 		GoldtoArmorData = 
 		{
-			GoldCost = 10,
+			GoldCost = 5,
 			ArmorGain = 1,
 			ReportValues = { ReportedMultiplier = "GoldCost" },
 		},

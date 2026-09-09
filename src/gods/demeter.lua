@@ -114,7 +114,7 @@ gods.CreateBoon({
 				ProjectileName = "DemeterOmegaStorm",
                 NumProjectiles = 2,
                 ProjectileCap = 3,
-				GustDamage = 7, --description only
+				GustDamage = 5, --description only
 				ReportValues = { 
 					ReportedGustDamage = "GustDamage",
 				},
